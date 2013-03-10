@@ -95,7 +95,7 @@ void func(void)
 ### GitHub website
 The most efficient way to help and contribute to this wrapper project is to
 use the tools provided by GitHub:
-- please fill bug reports and feature requests here: https://github.com/SRombauts/SQLiteCpp/issues
+- please fill bug reports and feature requests here: https://github.com/SRombauts/shared_ptr/issues
 - fork the repository, make some small changes and submit them with pull-request
 
 ### Contact

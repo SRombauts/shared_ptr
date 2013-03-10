@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Shared ptr : A minimal light and fast shared_ptr implementation designed to handle cases where boost/std::shared_ptr are not available" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Shared ptr</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/SRombauts/shared_ptr">View on GitHub</a>
+
+          <h1 id="project_title">Shared ptr</h1>
+          <h2 id="project_tagline">A minimal light and fast shared_ptr implementation designed to handle cases where boost/std::shared_ptr are not available</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/SRombauts/shared_ptr/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/SRombauts/shared_ptr/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.</p>
+
+<h3>The goals of this minimal shared_ptr are:</h3>
+
+<ul>
+<li>to replace the C++11 std::shared_ptr and boost::shared_ptr where they are not availlable</li>
+<li>to be a header only implementation</li>
+<li>to keep dependencies to a minimum (STL)</li>
+<li>to be portable</li>
+<li>to be light and fast</li>
+<li>to be monothreaded (not thread-safe)</li>
+<li>to use a permissive MIT license, similar to BSD or Boost, for proprietary/commercial usage</li>
+</ul><h3>Limitations</h3>
+
+<ul>
+<li>not thread-safe</li>
+<li>not safe if the raw pointer stored is not of the same type as the template parameter</li>
+</ul><h3> Suported platforms:</h3>
+
+<p>Developements and tests are done under the following OSs :</p>
+
+<ul>
+<li>Debian 7 (testing)</li>
+<li>Ubuntu 12.10</li>
+<li>Windows XP/7/8
+And following IDEs/Compilers</li>
+<li>GCC 4.7.x with a provided Makefile</li>
+<li>Eclipse CDT under Linux, using the provided Makefile</li>
+<li>Visual Studio Express 2008/2010/2012 for testing compatibility purpose</li>
+</ul><h3>Dependencies:</h3>
+
+<ul>
+<li>a STL implementation (even an old one, like those provided with VC6/eVC4 should work)</li>
+</ul><h3>Installation</h3>
+
+<p>To use this shared_ptr implementation, you only need to include the shared_ptr.hpp file
+from the source code of your projects.</p>
+
+<h3>License</h3>
+
+<p>Copyright (c) 2013 Sébastien Rombauts (<a href="mailto:sebastien.rombauts@gmail.com">sebastien.rombauts@gmail.com</a>)</p>
+
+<p>Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
+or copy at <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>)</p>
+
+<h2>Getting started</h2>
+
+<h3>About std::shared_ptr:</h3>
+
+<ul>
+<li><a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">http://en.cppreference.com/w/cpp/memory/shared_ptr</a></li>
+<li><a href="http://www.cplusplus.com/reference/memory/shared_ptr/">http://www.cplusplus.com/reference/memory/shared_ptr/</a></li>
+</ul><h3>About boost::shared_ptr:</h3>
+
+<ul>
+<li><a href="http://www.boost.org/libs/smart_ptr/shared_ptr.htm">http://www.boost.org/libs/smart_ptr/shared_ptr.htm</a></li>
+</ul><h3>First sample demonstrates how to create a shared_ptr to a class Xxx:</h3>
+
+<p>The Xxx class:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Xxx</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">Xxx</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="n">doSomething</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">len</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>shared_ptr usage:</p>
+
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">func</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Create an empty (ie. NULL) p1 shared_ptr</span>
+    <span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Xxx</span><span class="o">&gt;</span> <span class="n">xPtr</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Create a new Xxx object, and give its ownership to the yPtr shared_ptr</span>
+        <span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Xxx</span><span class="o">&gt;</span> <span class="n">yPtr</span><span class="p">(</span><span class="k">new</span> <span class="n">Xxx</span><span class="p">());</span>
+
+        <span class="c1">// Access members functions/variables like with a raw pointer</span>
+        <span class="n">yPtr</span><span class="o">-&gt;</span><span class="n">doSomething</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
+
+        <span class="c1">// Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)</span>
+        <span class="n">xPtr</span> <span class="o">=</span> <span class="n">yPtr</span><span class="p">;</span>
+
+    <span class="p">}</span> <span class="c1">// yPtr is destroyed, but xPtr retains the ownership of the object</span>
+
+    <span class="p">...</span>   
+
+<span class="p">}</span> <span class="c1">// xPtr is destroyed, the reference counter drops to 0 thus the object is destroyed and the memory freed</span>
+</pre></div>
+
+<h2>How to contribute</h2>
+
+<h3>GitHub website</h3>
+
+<p>The most efficient way to help and contribute to this wrapper project is to
+use the tools provided by GitHub:</p>
+
+<ul>
+<li>please fill bug reports and feature requests here: <a href="https://github.com/SRombauts/shared_ptr/issues">https://github.com/SRombauts/shared_ptr/issues</a>
+</li>
+<li>fork the repository, make some small changes and submit them with pull-request</li>
+</ul><h3>Contact</h3>
+
+<p>You can also email me directly, I will answer any questions and requests.</p>
+
+<h3>Coding Style Guidelines</h3>
+
+<p>The source code use the CamelCase naming style variant where :</p>
+
+<ul>
+<li>type names (class, struct, typedef, enums...) begins with a capital letter</li>
+<li>files (.cpp/.h) are named like the class they contains</li>
+<li>function and variable names begins with a lower case letter</li>
+<li>member variables begins with a 'm', function arguments begins with a 'a', boolean with a 'b', pointers with a 'p'</li>
+<li>each file, class, method and member variable is documented using Doxygen tags
+See also <a href="http://www.appinf.com/download/CppCodingStyleGuide.pdf">http://www.appinf.com/download/CppCodingStyleGuide.pdf</a> for good guidelines</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Shared ptr maintained by <a href="https://github.com/SRombauts">SRombauts</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

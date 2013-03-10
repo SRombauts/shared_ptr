@@ -13,6 +13,7 @@ or copy at http://opensource.org/licenses/MIT)
 ### The goals of this minimal shared_ptr are:
 
 - to replace the C++11 std::shared_ptr and boost::shared_ptr where they are not availlable
+- to be a header only implementation
 - to keep dependencies to a minimum (STL)
 - to be portable
 - to be light and fast
@@ -38,8 +39,10 @@ And following IDEs/Compilers
 
  - a STL implementation (even an old one, like those provided with VC6/eVC4 should work)
 
-To use it in your project, you only need to include the shared_ptr.hpp source files
-in your project code base.
+### Installation
+
+To use this shared_ptr implementation, you only need to include the shared_ptr.hpp file
+from the source code of your projects.
 
 ## Getting started
 ### About std::shared_ptr:
@@ -81,7 +84,7 @@ void func(void)
         // Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)
         xPtr = yPtr;
         
-    } // yPtr is destroyed, but yPtr retains the ownership of the object
+    } // yPtr is destroyed, but xPtr retains the ownership of the object
 
     ...   
     

@@ -44,6 +44,12 @@ public:
     {
         release();
     }
+    inline void reset(T* p) throw() // nothrow
+    {
+        release();
+        px = p;
+        acquire();
+    }
 
     inline shared_ptr& operator= (shared_ptr ptr) throw() // nothrow
     {

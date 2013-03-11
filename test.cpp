@@ -54,6 +54,9 @@ void func(void)
     {
         // Create a new Xxx object, and give its ownership to the yPtr shared_ptr
         shared_ptr<Xxx> yPtr(new Xxx(1024));
+        // Same as :
+        //shared_ptr<Xxx> yPtr;
+        //yPtr.reset(new Xxx(1024));
         
         if (yPtr) // valid pointer
         {
@@ -72,6 +75,8 @@ void func(void)
 
     std::cout << "func: out\n";
     
+    // Same as :
+    //xPtr.reset();
 } // xPtr is destroyed, the reference counter drops to 0 thus the object is destroyed and the memory freed
 
 int main(void)

@@ -21,18 +21,18 @@ template<class T>
 class shared_ptr
 {
 public:
-    inline shared_ptr(void) throw() : // nothrow
+    shared_ptr(void) throw() : // nothrow
         px(NULL),
         pn(NULL)
     {
     }
-    inline explicit shared_ptr(T* p) : // throw std::bad_alloc
+    explicit shared_ptr(T* p) : // throw std::bad_alloc
         px(p),
         pn(NULL)
     {
         acquire();
     }
-    inline shared_ptr(const shared_ptr& ptr) : // throw std::bad_alloc
+    shared_ptr(const shared_ptr& ptr) : // throw std::bad_alloc
         px(ptr.px),
         pn(ptr.pn)
     {
@@ -46,19 +46,19 @@ public:
     {
         release();
     }
-    inline void reset(T* p) throw() // nothrow
+    void reset(T* p) throw() // nothrow
     {
         release();
         px = p;
         acquire();
     }
 
-    inline shared_ptr& operator= (shared_ptr ptr) throw() // nothrow
+    shared_ptr& operator=(shared_ptr ptr) throw() // nothrow
     {
         swap(ptr);
         return *this;
     }
-    inline void swap(shared_ptr& lhs) throw() // nothrow
+    void swap(shared_ptr& lhs) throw() // nothrow
     {
         std::swap(px, lhs.px);
         std::swap(pn, lhs.pn);
@@ -72,7 +72,7 @@ public:
     {
         return (NULL != pn);
     }
-    inline long use_count(void)  const throw() // nothrow
+    long use_count(void)  const throw() // nothrow
     {
         long count = 0;
         if (NULL != pn)
@@ -95,8 +95,57 @@ public:
         return px;
     }
 
+    inline bool operator== (const shared_ptr& ptr) const
+    {
+        return (px == p.px)
+    }
+    inline bool operator== (const T* p) const
+    {
+        return (px == p)
+    }
+    inline bool operator!= (const shared_ptr& ptr) const
+    {
+        return (px != p.px)
+    }
+    inline bool operator!= (const T* p) const
+    {
+        return (px != p)
+    }
+    inline bool operator<= (const shared_ptr& ptr) const
+    {
+        return (px <= p.px)
+    }
+    inline bool operator<= (const T* p) const
+    {
+        return (px <= p)
+    }
+    inline bool operator< (const shared_ptr& ptr) const
+    {
+        return (px < p.px)
+    }
+    inline bool operator< (const T* p) const
+    {
+        return (px < p)
+    }
+    inline bool operator>= (const shared_ptr& ptr) const
+    {
+        return (px >= p.px)
+    }
+    inline bool operator>= (const T* p) const
+    {
+        return (px >= p)
+    }
+    inline bool operator> (const shared_ptr& ptr) const
+    {
+        return (px > p.px)
+    }
+    inline bool operator> (const T* p) const
+    {
+        return (px > p)
+    }
+
 private:
-    inline void acquire(void)
+    void acquire(void)
     {
         if (NULL != px)
         {
@@ -118,7 +167,7 @@ private:
             }
         }
     }
-    inline void release(void) throw() // nothrow
+    void release(void) throw() // nothrow
     {
         if (NULL != pn)
         {

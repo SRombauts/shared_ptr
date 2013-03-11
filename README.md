@@ -74,13 +74,24 @@ void func(void)
     // Create an empty (ie. NULL) p1 shared_ptr
     shared_ptr<Xxx> xPtr;
 
-    if (true)
+    if (xPtr) // empty pointer
+    {
+        // impossible
+    }
+    else
     {
         // Create a new Xxx object, and give its ownership to the yPtr shared_ptr
         shared_ptr<Xxx> yPtr(new Xxx(1024));
         
-        // Access members functions/variables like with a raw pointer
-        yPtr->doSomething();
+        if (yPtr) // valid pointer
+        {
+            // Access members functions/variables like with a raw pointer
+            yPtr->doSomething();
+        }
+        else
+        {
+            // impossible
+        }
         
         // Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)
         xPtr = yPtr;

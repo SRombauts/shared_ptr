@@ -10,10 +10,6 @@
 #pragma once
 
 
-// TODO : find a short original namespace
-namespace minimal
-{
-
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
  *
@@ -23,13 +19,96 @@ template<class T>
 class shared_ptr
 {
 public:
-    shared_ptr(void)    throw(); // nothrow
-    shared_ptr(T*)      throw(); // nothrow
-    ~shared_ptr(void)   throw(); // nothrow
-    void reset(void)    throw(); // nothrow
+    inline shared_ptr(void) throw() : // nothrow
+        px(NULL),
+        pn(NULL)
+    {
+    }
+    inline explicit shared_ptr(T* p) : // throw std::bad_alloc
+        px(p),
+        pn(NULL)
+    {
+        acquire();
+    }
+    inline shared_ptr(const shared_ptr& ptr) : // throw std::bad_alloc
+        px(ptr.px),
+        pn(ptr.pn)
+    {
+        acquire();
+    }
+    inline ~shared_ptr(void) throw() // nothrow
+    {
+        release();
+    }
+    inline void reset(void) throw() // nothrow
+    {
+        release();
+    }
+
+    inline shared_ptr& operator= (shared_ptr ptr) throw() // nothrow
+    {
+        swap(ptr);
+        return *this;
+    }
+
+    inline operator bool() const throw() // nothrow
+    {
+        return (NULL != px);
+    }
+
+    inline T& operator*()  const throw() // nothrow
+    {
+        return *px;
+    }
+    inline T* operator->() const throw() // nothrow
+    {
+        return px;
+    }
+
 private:
-    T* ptr;
+    inline void acquire(void)
+    {
+        if (NULL != px)
+        {
+            if (NULL == pn)
+            {
+                try
+                {
+                    pn = new unsigned int(1);
+                }
+                catch (std::bad_alloc&)
+                {
+                    delete px;
+                    throw;
+                }
+            }
+            else
+            {
+                ++(*pn);
+            }
+        }
+    }
+    inline void swap(shared_ptr& lhs) throw() // nothrow
+    {
+        std::swap(px, lhs.px);
+        std::swap(pn, lhs.pn);
+    }
+    inline void release(void) throw() // nothrow
+    {
+        if (NULL != pn)
+        {
+            --(*pn);
+            if (0 == *pn)
+            {
+                delete px;
+                px = NULL;
+                delete pn;
+                pn = NULL;
+            }
+        }
+    }
+
+private:
+    T*              px;
+    unsigned int*   pn;
 };
-
-
-}  // namespace minimal

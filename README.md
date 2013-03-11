@@ -59,9 +59,10 @@ The Xxx class:
 class Xxx
 {
 public:
-    Xxx(void);
+    Xxx(size_t len = 0);
+    ~Xxx(void);
     ...
-    doSomething(size_t len);
+    void doSomething(void);
     ...
 };
 ```
@@ -76,10 +77,10 @@ void func(void)
     if (true)
     {
         // Create a new Xxx object, and give its ownership to the yPtr shared_ptr
-        shared_ptr<Xxx> yPtr(new Xxx());
+        shared_ptr<Xxx> yPtr(new Xxx(1024));
         
         // Access members functions/variables like with a raw pointer
-        yPtr->doSomething(1024);
+        yPtr->doSomething();
         
         // Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)
         xPtr = yPtr;

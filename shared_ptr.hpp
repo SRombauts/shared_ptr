@@ -13,7 +13,9 @@
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
  *
- * TODO
+ * shared_ptr is a smart pointer retaining ownership of an object through a provided pointer,
+ * and sharing this ownership with a reference counter.
+ * It destroys the object when the last shared pointer pointing to it is destroyed or reset.
  */
 template<class T>
 class shared_ptr
@@ -56,10 +58,28 @@ public:
         swap(ptr);
         return *this;
     }
+    inline void swap(shared_ptr& lhs) throw() // nothrow
+    {
+        std::swap(px, lhs.px);
+        std::swap(pn, lhs.pn);
+    }
 
     inline operator bool() const throw() // nothrow
     {
-        return (NULL != px);
+        return unique();
+    }
+    inline bool unique(void)  const throw() // nothrow
+    {
+        return (NULL != pn);
+    }
+    inline long use_count(void)  const throw() // nothrow
+    {
+        long count = 0;
+        if (NULL != pn)
+        {
+            count = *pn;
+        }
+        return count;
     }
 
     inline T& operator*()  const throw() // nothrow
@@ -67,6 +87,10 @@ public:
         return *px;
     }
     inline T* operator->() const throw() // nothrow
+    {
+        return px;
+    }
+    inline T* get(void)  const throw() // nothrow
     {
         return px;
     }
@@ -80,7 +104,7 @@ private:
             {
                 try
                 {
-                    pn = new unsigned int(1);
+                    pn = new long(1);
                 }
                 catch (std::bad_alloc&)
                 {
@@ -93,11 +117,6 @@ private:
                 ++(*pn);
             }
         }
-    }
-    inline void swap(shared_ptr& lhs) throw() // nothrow
-    {
-        std::swap(px, lhs.px);
-        std::swap(pn, lhs.pn);
     }
     inline void release(void) throw() // nothrow
     {
@@ -115,6 +134,6 @@ private:
     }
 
 private:
-    T*              px;
-    unsigned int*   pn;
+    T*      px; //!< Native pointer
+    long*   pn; //!< Reference counter
 };

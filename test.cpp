@@ -1,3 +1,12 @@
+/**
+ * @file  test.hpp
+ * @brief test the subset implementation of the C++11 std::shared_ptr or boost::shared_ptr.
+ *
+ * Copyright (c) 2013 Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ *
+ * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
+ * or copy at http://opensource.org/licenses/MIT)
+ */
 #include <iostream>
 
 #include "../shared_ptr/shared_ptr.hpp"
@@ -6,7 +15,7 @@
 class Xxx
 {
 public:
-    Xxx(size_t len = 0) :
+    explicit Xxx(size_t len = 0) :
         size(len),
         buffer(NULL)
     {

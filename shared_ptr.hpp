@@ -97,51 +97,51 @@ public:
 
     inline bool operator== (const shared_ptr& ptr) const
     {
-        return (px == p.px)
+        return (px == ptr.px);
     }
     inline bool operator== (const T* p) const
     {
-        return (px == p)
+        return (px == p);
     }
     inline bool operator!= (const shared_ptr& ptr) const
     {
-        return (px != p.px)
+        return (px != ptr.px);
     }
     inline bool operator!= (const T* p) const
     {
-        return (px != p)
+        return (px != p);
     }
     inline bool operator<= (const shared_ptr& ptr) const
     {
-        return (px <= p.px)
+        return (px <= ptr.px);
     }
     inline bool operator<= (const T* p) const
     {
-        return (px <= p)
+        return (px <= p);
     }
     inline bool operator< (const shared_ptr& ptr) const
     {
-        return (px < p.px)
+        return (px < ptr.px);
     }
     inline bool operator< (const T* p) const
     {
-        return (px < p)
+        return (px < p);
     }
     inline bool operator>= (const shared_ptr& ptr) const
     {
-        return (px >= p.px)
+        return (px >= ptr.px);
     }
     inline bool operator>= (const T* p) const
     {
-        return (px >= p)
+        return (px >= p);
     }
     inline bool operator> (const shared_ptr& ptr) const
     {
-        return (px > p.px)
+        return (px > ptr.px);
     }
     inline bool operator> (const T* p) const
     {
-        return (px > p)
+        return (px > p);
     }
 
 private:

@@ -1,15 +1,17 @@
 /**
- * @file  test.hpp
- * @brief test the subset implementation of the C++11 std::shared_ptr or boost::shared_ptr.
+ * @file  main.hpp
+ * @brief sample demonstrating how to use this shared_ptr minimal implementation
  *
  * Copyright (c) 2013 Sebastien Rombauts (sebastien.rombauts@gmail.com)
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
  */
-#include <iostream>
+#include <iostream>  // std::cout
+#include <cstring>   // memset
+#include <cstdlib>   // abort
 
-#include "../shared_ptr/shared_ptr.hpp"
+#include "../shared_ptr.hpp"
 
 
 class Xxx
@@ -44,8 +46,8 @@ public:
     };
 
 private:
-    char*   buffer;
     size_t  size;
+    char*   buffer;
 };
 
 void func(void)
@@ -66,7 +68,7 @@ void func(void)
         // Same as :
         //shared_ptr<Xxx> yPtr;
         //yPtr.reset(new Xxx(1024));
-        
+
         if (yPtr) // valid pointer
         {
             // Access members functions/variables like with a raw pointer
@@ -76,14 +78,14 @@ void func(void)
         {
             abort(); // impossible
         }
-        
+
         // Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)
         xPtr = yPtr;
-        
+
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
     std::cout << "func: out\n";
-    
+
     // Same as :
     //xPtr.reset();
 } // xPtr is destroyed, the reference counter drops to 0 thus the object is destroyed and the memory freed

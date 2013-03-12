@@ -21,31 +21,43 @@ template<class T>
 class shared_ptr
 {
 public:
+    /// @brief Default constructor
     shared_ptr(void) throw() : // nothrow
         px(NULL),
         pn(NULL)
     {
     }
+    /// @brief Constructor with the provided pointer to manage
     explicit shared_ptr(T* p) : // throw std::bad_alloc
         px(p),
         pn(NULL)
     {
         acquire();
     }
+    /// @brief Copy constructor (used by the copy-and-swap idiom)
     shared_ptr(const shared_ptr& ptr) : // throw std::bad_alloc
         px(ptr.px),
         pn(ptr.pn)
     {
         acquire();
     }
+    /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
+    shared_ptr& operator=(shared_ptr ptr) throw() // nothrow
+    {
+        swap(ptr);
+        return *this;
+    }
+    /// @brief the destructor release its ownership
     inline ~shared_ptr(void) throw() // nothrow
     {
         release();
     }
+    /// @brief this reset release its ownership
     inline void reset(void) throw() // nothrow
     {
         release();
     }
+    /// @brief this reset release its ownership and re-acquire another one
     void reset(T* p) throw() // nothrow
     {
         release();
@@ -53,24 +65,21 @@ public:
         acquire();
     }
 
-    shared_ptr& operator=(shared_ptr ptr) throw() // nothrow
-    {
-        swap(ptr);
-        return *this;
-    }
+    /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
     void swap(shared_ptr& lhs) throw() // nothrow
     {
         std::swap(px, lhs.px);
         std::swap(pn, lhs.pn);
     }
 
+    // reference counter operations :
     inline operator bool() const throw() // nothrow
     {
         return unique();
     }
     inline bool unique(void)  const throw() // nothrow
     {
-        return (NULL != pn);
+        return (1 == use_count());
     }
     long use_count(void)  const throw() // nothrow
     {
@@ -82,6 +91,7 @@ public:
         return count;
     }
 
+    // underlying pointer operations :
     inline T& operator*()  const throw() // nothrow
     {
         return *px;
@@ -95,6 +105,7 @@ public:
         return px;
     }
 
+    // comparaison operators
     inline bool operator== (const shared_ptr& ptr) const
     {
         return (px == ptr.px);
@@ -145,6 +156,7 @@ public:
     }
 
 private:
+    /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
     void acquire(void)
     {
         if (NULL != px)
@@ -167,6 +179,8 @@ private:
             }
         }
     }
+
+    /// @brief release the ownership of the px pointer, destroying the object when appropriate
     void release(void) throw() // nothrow
     {
         if (NULL != pn)

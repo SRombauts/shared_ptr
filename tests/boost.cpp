@@ -10,7 +10,7 @@
 #define BOOST_TEST_MODULE shared_ptr
 #include <boost/test/included/unit_test.hpp>
 
-#include "../shared_ptr.hpp"
+#include "../src/shared_ptr.hpp"
 
 
 struct Struct

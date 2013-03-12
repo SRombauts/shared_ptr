@@ -11,7 +11,7 @@
 #include <cstring>   // memset
 #include <cstdlib>   // abort
 
-#include "../shared_ptr.hpp"
+#include "../src/shared_ptr.hpp"
 
 
 class Xxx

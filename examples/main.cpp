@@ -52,7 +52,7 @@ private:
 
 void func(void)
 {
-    // Create an empty (ie. NULL) p1 shared_ptr
+    // Create an empty (ie. NULL) shared_ptr
     shared_ptr<Xxx> xPtr;
 
     std::cout << "func: in\n";

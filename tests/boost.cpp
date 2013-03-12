@@ -24,6 +24,14 @@ struct Struct
     {
         --_mNbInstances;
     }
+    void incr(void)
+    {
+        ++mVal;
+    }
+    void decr(void)
+    {
+        --mVal;
+    }
 
     int         mVal;
     static int _mNbInstances;
@@ -99,6 +107,14 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
             BOOST_CHECK(1       == xPtr->_mNbInstances);
             BOOST_CHECK(1       == Struct::_mNbInstances);
 
+            // call a function
+            xPtr->incr();
+            BOOST_CHECK(124     == xPtr->mVal);
+            (*xPtr).incr();
+            BOOST_CHECK(125     == (*xPtr).mVal);
+            xPtr->decr();
+            xPtr->decr();
+
             // Copy construct the shared_ptr
             shared_ptr<Struct> yPtr(xPtr);
 
@@ -171,6 +187,7 @@ BOOST_AUTO_TEST_CASE (reset_ptr)
     BOOST_CHECK(NULL    != xPtr.get());
     BOOST_CHECK(123     == xPtr->mVal);
     BOOST_CHECK(1       == Struct::_mNbInstances);
+    Struct* pX  = xPtr.get();
 
     // Reset it with another new pointer
     xPtr.reset(new Struct(234));
@@ -180,4 +197,116 @@ BOOST_AUTO_TEST_CASE (reset_ptr)
     BOOST_CHECK(NULL    != xPtr.get());
     BOOST_CHECK(234     == xPtr->mVal);
     BOOST_CHECK(1       == Struct::_mNbInstances);
+    BOOST_CHECK(pX != xPtr.get());
+
+    // Reset to NULL
+    xPtr.reset();
+
+    BOOST_CHECK(false   == xPtr.unique());
+    BOOST_CHECK(0       == xPtr.use_count());
+    BOOST_CHECK(NULL    == xPtr.get());
+    BOOST_CHECK(0       == Struct::_mNbInstances);
+}
+
+BOOST_AUTO_TEST_CASE (compare_ptr)
+{
+    // Create a shared_ptr
+    shared_ptr<Struct> xPtr(new Struct(123));
+
+    BOOST_CHECK(true    == xPtr.unique());
+    BOOST_CHECK(1       == xPtr.use_count());
+    BOOST_CHECK(NULL    != xPtr.get());
+    BOOST_CHECK(123     == xPtr->mVal);
+    BOOST_CHECK(1       == Struct::_mNbInstances);
+    Struct* pX = xPtr.get();
+
+    // Create another shared_ptr
+    shared_ptr<Struct> yPtr(new Struct(234));
+
+    BOOST_CHECK(true    == xPtr.unique());
+    BOOST_CHECK(1       == xPtr.use_count());
+    BOOST_CHECK(NULL    != xPtr.get());
+    BOOST_CHECK(123     == xPtr->mVal);
+    BOOST_CHECK(2       == Struct::_mNbInstances);
+
+    BOOST_CHECK(true    == yPtr.unique());
+    BOOST_CHECK(1       == yPtr.use_count());
+    BOOST_CHECK(NULL    != yPtr.get());
+    BOOST_CHECK(234     == yPtr->mVal);
+    Struct* pY = yPtr.get();
+
+    BOOST_CHECK(xPtr    != pY);
+    BOOST_CHECK(xPtr    != yPtr);
+    if (pX < pY)
+    {
+        BOOST_CHECK(xPtr    < pY);
+        BOOST_CHECK(xPtr    < yPtr);
+        BOOST_CHECK(xPtr    <= pY);
+        BOOST_CHECK(xPtr    <= yPtr);
+        BOOST_CHECK(yPtr    > pX);
+        BOOST_CHECK(yPtr    > xPtr);
+        BOOST_CHECK(yPtr    >= pX);
+        BOOST_CHECK(yPtr    >= xPtr);
+    }
+    else // (pX > pY)
+    {
+        BOOST_CHECK(xPtr    > pY);
+        BOOST_CHECK(xPtr    > yPtr);
+        BOOST_CHECK(xPtr    >= pY);
+        BOOST_CHECK(xPtr    >= yPtr);
+        BOOST_CHECK(yPtr    < pX);
+        BOOST_CHECK(yPtr    < xPtr);
+        BOOST_CHECK(yPtr    <= pX);
+        BOOST_CHECK(yPtr    <= xPtr);
+    }
+
+    // Copy a shared_ptr
+    shared_ptr<Struct> zPtr = xPtr;
+    Struct* pZ = zPtr.get();
+
+    BOOST_CHECK(pX      == pZ);
+    BOOST_CHECK(xPtr    == pZ);
+    BOOST_CHECK(xPtr    == zPtr);
+    BOOST_CHECK(zPtr    == pX);
+    BOOST_CHECK(zPtr    == xPtr);
+    BOOST_CHECK(xPtr    >= pZ);
+    BOOST_CHECK(xPtr    >= zPtr);
+    BOOST_CHECK(xPtr    <= pZ);
+    BOOST_CHECK(xPtr    <= zPtr);
+}
+
+BOOST_AUTO_TEST_CASE (swap_ptr)
+{
+    // Create a shared_ptr
+    shared_ptr<Struct> xPtr(new Struct(123));
+
+    BOOST_CHECK(true    == xPtr.unique());
+    BOOST_CHECK(1       == xPtr.use_count());
+    BOOST_CHECK(NULL    != xPtr.get());
+    BOOST_CHECK(123     == xPtr->mVal);
+    BOOST_CHECK(1       == Struct::_mNbInstances);
+    Struct* pX = xPtr.get();
+
+    // Create another shared_ptr
+    shared_ptr<Struct> yPtr(new Struct(234));
+
+    BOOST_CHECK(true    == yPtr.unique());
+    BOOST_CHECK(1       == yPtr.use_count());
+    BOOST_CHECK(NULL    != yPtr.get());
+    BOOST_CHECK(234     == yPtr->mVal);
+    BOOST_CHECK(2       == Struct::_mNbInstances);
+    Struct* pY = yPtr.get();
+
+    if (pX < pY)
+    {
+        BOOST_CHECK(xPtr    < yPtr);
+        xPtr.swap(yPtr);
+        BOOST_CHECK(xPtr    > yPtr);
+    }
+    else // (pX > pY)
+    {
+        BOOST_CHECK(xPtr    > yPtr);
+        xPtr.swap(yPtr);
+        BOOST_CHECK(xPtr    < yPtr);
+    }
 }

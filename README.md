@@ -17,7 +17,6 @@ shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 s
 
 ### Limitations
 - not thread-safe
-- not safe if the raw pointer stored is not of the same type as the template parameter
 
 ### Suported platforms:
 

@@ -45,6 +45,7 @@ BOOST_AUTO_TEST_CASE (empty_ptr)
     // Create an empty (ie. NULL) shared_ptr
     shared_ptr<Struct> xPtr;
 
+    BOOST_CHECK(false   == xPtr);
     BOOST_CHECK(false   == xPtr.unique());
     BOOST_CHECK(0       == xPtr.use_count());
     BOOST_CHECK(NULL    == xPtr.get());
@@ -57,6 +58,7 @@ BOOST_AUTO_TEST_CASE (empty_ptr)
     // Reset to NULL (ie. do nothing)
     xPtr.reset();
 
+    BOOST_CHECK(false   == xPtr);
     BOOST_CHECK(false   == xPtr.unique());
     BOOST_CHECK(0       == xPtr.use_count());
     BOOST_CHECK(NULL    == xPtr.get());
@@ -66,6 +68,7 @@ BOOST_AUTO_TEST_CASE (empty_ptr)
         // Copy construct the empty (ie. NULL) shared_ptr
         shared_ptr<Struct> yPtr(xPtr);
 
+        BOOST_CHECK(false   == xPtr);
         BOOST_CHECK(false   == xPtr.unique());
         BOOST_CHECK(0       == xPtr.use_count());
         BOOST_CHECK(NULL    == xPtr.get());
@@ -77,6 +80,7 @@ BOOST_AUTO_TEST_CASE (empty_ptr)
         shared_ptr<Struct> zPtr;
         zPtr = xPtr;
 
+        BOOST_CHECK(false   == xPtr);
         BOOST_CHECK(false   == xPtr.unique());
         BOOST_CHECK(0       == xPtr.use_count());
         BOOST_CHECK(NULL    == xPtr.get());
@@ -86,6 +90,7 @@ BOOST_AUTO_TEST_CASE (empty_ptr)
     }
     // end of scope
 
+    BOOST_CHECK(false   == xPtr);
     BOOST_CHECK(false   == xPtr.unique());
     BOOST_CHECK(0       == xPtr.use_count());
     BOOST_CHECK(NULL    == xPtr.get());
@@ -97,6 +102,7 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
         // Create a shared_ptr
         shared_ptr<Struct> xPtr(new Struct(123));
 
+        BOOST_CHECK(true    == xPtr);
         BOOST_CHECK(true    == xPtr.unique());
         BOOST_CHECK(1       == xPtr.use_count());
         BOOST_CHECK(NULL    != xPtr.get());
@@ -119,33 +125,39 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
             shared_ptr<Struct> yPtr(xPtr);
 
             BOOST_CHECK(xPtr == yPtr);
+            BOOST_CHECK(true    == xPtr);
             BOOST_CHECK(false   == xPtr.unique());
             BOOST_CHECK(2       == xPtr.use_count());
             BOOST_CHECK(NULL    != xPtr.get());
             BOOST_CHECK(123     == xPtr->mVal);
             BOOST_CHECK(1       == Struct::_mNbInstances);
+            BOOST_CHECK(true    == yPtr);
             BOOST_CHECK(false   == yPtr.unique());
             BOOST_CHECK(2       == yPtr.use_count());
             BOOST_CHECK(NULL    != yPtr.get());
             BOOST_CHECK(123     == yPtr->mVal);
             BOOST_CHECK(1       == Struct::_mNbInstances);
 
+            if (yPtr)
             {
                 // Assign the shared_ptr
                 shared_ptr<Struct> zPtr;
                 zPtr = xPtr;
 
                 BOOST_CHECK(xPtr == zPtr);
+                BOOST_CHECK(true    == xPtr);
                 BOOST_CHECK(false   == xPtr.unique());
                 BOOST_CHECK(3       == xPtr.use_count());
                 BOOST_CHECK(NULL    != xPtr.get());
                 BOOST_CHECK(123     == xPtr->mVal);
                 BOOST_CHECK(1       == Struct::_mNbInstances);
+                BOOST_CHECK(true    == yPtr);
                 BOOST_CHECK(false   == yPtr.unique());
                 BOOST_CHECK(3       == yPtr.use_count());
                 BOOST_CHECK(NULL    != yPtr.get());
                 BOOST_CHECK(123     == yPtr->mVal);
                 BOOST_CHECK(1       == Struct::_mNbInstances);
+                BOOST_CHECK(true    == zPtr);
                 BOOST_CHECK(false   == zPtr.unique());
                 BOOST_CHECK(3       == zPtr.use_count());
                 BOOST_CHECK(NULL    != zPtr.get());
@@ -153,6 +165,7 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
                 BOOST_CHECK(1       == Struct::_mNbInstances);
             }
 
+            BOOST_CHECK(true    == xPtr);
             BOOST_CHECK(false   == xPtr.unique());
             BOOST_CHECK(2       == xPtr.use_count());
             BOOST_CHECK(NULL    != xPtr.get());
@@ -164,6 +177,7 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
             BOOST_ERROR("bool cast operator error");
         }
 
+        BOOST_CHECK(true    == xPtr);
         BOOST_CHECK(true    == xPtr.unique());
         BOOST_CHECK(1       == xPtr.use_count());
         BOOST_CHECK(NULL    != xPtr.get());
@@ -182,6 +196,7 @@ BOOST_AUTO_TEST_CASE (reset_ptr)
     // Reset it with a new pointer
     xPtr.reset(new Struct(123));
 
+    BOOST_CHECK(true    == xPtr);
     BOOST_CHECK(true    == xPtr.unique());
     BOOST_CHECK(1       == xPtr.use_count());
     BOOST_CHECK(NULL    != xPtr.get());
@@ -192,6 +207,7 @@ BOOST_AUTO_TEST_CASE (reset_ptr)
     // Reset it with another new pointer
     xPtr.reset(new Struct(234));
 
+    BOOST_CHECK(true    == xPtr);
     BOOST_CHECK(true    == xPtr.unique());
     BOOST_CHECK(1       == xPtr.use_count());
     BOOST_CHECK(NULL    != xPtr.get());
@@ -213,6 +229,7 @@ BOOST_AUTO_TEST_CASE (compare_ptr)
     // Create a shared_ptr
     shared_ptr<Struct> xPtr(new Struct(123));
 
+    BOOST_CHECK(true    == xPtr);
     BOOST_CHECK(true    == xPtr.unique());
     BOOST_CHECK(1       == xPtr.use_count());
     BOOST_CHECK(NULL    != xPtr.get());
@@ -223,12 +240,14 @@ BOOST_AUTO_TEST_CASE (compare_ptr)
     // Create another shared_ptr
     shared_ptr<Struct> yPtr(new Struct(234));
 
+    BOOST_CHECK(true    == xPtr);
     BOOST_CHECK(true    == xPtr.unique());
     BOOST_CHECK(1       == xPtr.use_count());
     BOOST_CHECK(NULL    != xPtr.get());
     BOOST_CHECK(123     == xPtr->mVal);
     BOOST_CHECK(2       == Struct::_mNbInstances);
 
+    BOOST_CHECK(true    == yPtr);
     BOOST_CHECK(true    == yPtr.unique());
     BOOST_CHECK(1       == yPtr.use_count());
     BOOST_CHECK(NULL    != yPtr.get());
@@ -280,6 +299,7 @@ BOOST_AUTO_TEST_CASE (swap_ptr)
     // Create a shared_ptr
     shared_ptr<Struct> xPtr(new Struct(123));
 
+    BOOST_CHECK(true    == xPtr);
     BOOST_CHECK(true    == xPtr.unique());
     BOOST_CHECK(1       == xPtr.use_count());
     BOOST_CHECK(NULL    != xPtr.get());
@@ -290,6 +310,7 @@ BOOST_AUTO_TEST_CASE (swap_ptr)
     // Create another shared_ptr
     shared_ptr<Struct> yPtr(new Struct(234));
 
+    BOOST_CHECK(true    == yPtr);
     BOOST_CHECK(true    == yPtr.unique());
     BOOST_CHECK(1       == yPtr.use_count());
     BOOST_CHECK(NULL    != yPtr.get());
@@ -302,11 +323,15 @@ BOOST_AUTO_TEST_CASE (swap_ptr)
         BOOST_CHECK(xPtr    < yPtr);
         xPtr.swap(yPtr);
         BOOST_CHECK(xPtr    > yPtr);
+        BOOST_CHECK(true    == xPtr);
+        BOOST_CHECK(true    == yPtr);
     }
     else // (pX > pY)
     {
         BOOST_CHECK(xPtr    > yPtr);
         xPtr.swap(yPtr);
         BOOST_CHECK(xPtr    < yPtr);
+        BOOST_CHECK(true    == xPtr);
+        BOOST_CHECK(true    == yPtr);
     }
 }

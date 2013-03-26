@@ -75,7 +75,7 @@ public:
     // reference counter operations :
     inline operator bool() const throw() // nothrow
     {
-        return unique();
+        return (0 < use_count());
     }
     inline bool unique(void)  const throw() // nothrow
     {

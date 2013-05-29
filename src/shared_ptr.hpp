@@ -62,6 +62,7 @@ public:
     {
         release();
         px = p;
+        pn = NULL;
         acquire();
     }
 

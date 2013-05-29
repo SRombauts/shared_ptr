@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
             // Copy construct the shared_ptr
             shared_ptr<Struct> yPtr(xPtr);
 
-            BOOST_CHECK(xPtr == yPtr);
+            BOOST_CHECK(xPtr    == yPtr);
             BOOST_CHECK(true    == xPtr);
             BOOST_CHECK(false   == xPtr.unique());
             BOOST_CHECK(2       == xPtr.use_count());
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE (basic_ptr)
                 shared_ptr<Struct> zPtr;
                 zPtr = xPtr;
 
-                BOOST_CHECK(xPtr == zPtr);
+                BOOST_CHECK(xPtr    == zPtr);
                 BOOST_CHECK(true    == xPtr);
                 BOOST_CHECK(false   == xPtr.unique());
                 BOOST_CHECK(3       == xPtr.use_count());
@@ -213,7 +213,52 @@ BOOST_AUTO_TEST_CASE (reset_ptr)
     BOOST_CHECK(NULL    != xPtr.get());
     BOOST_CHECK(234     == xPtr->mVal);
     BOOST_CHECK(1       == Struct::_mNbInstances);
-    BOOST_CHECK(pX != xPtr.get());
+    BOOST_CHECK(pX      != xPtr.get());
+
+    // Copy-construct a new shared_ptr to the same object
+    shared_ptr<Struct> yPtr(xPtr);
+
+    BOOST_CHECK(xPtr    == yPtr);
+    BOOST_CHECK(true    == xPtr);
+    BOOST_CHECK(false   == xPtr.unique());
+    BOOST_CHECK(2       == xPtr.use_count());
+    BOOST_CHECK(NULL    != xPtr.get());
+    BOOST_CHECK(234     == xPtr->mVal);
+    BOOST_CHECK(true    == yPtr);
+    BOOST_CHECK(false   == yPtr.unique());
+    BOOST_CHECK(2       == yPtr.use_count());
+    BOOST_CHECK(NULL    != yPtr.get());
+    BOOST_CHECK(234     == yPtr->mVal);
+    BOOST_CHECK(1       == Struct::_mNbInstances);
+
+    // Reset it with another new pointer : now xPtr and yPtr each manage a different instance
+    yPtr.reset(new Struct(345));
+
+    BOOST_CHECK(xPtr    != yPtr);
+    BOOST_CHECK(true    == xPtr);
+    BOOST_CHECK(true    == xPtr.unique());
+    BOOST_CHECK(1       == xPtr.use_count());
+    BOOST_CHECK(NULL    != xPtr.get());
+    BOOST_CHECK(234     == xPtr->mVal);
+    BOOST_CHECK(true    == yPtr);
+    BOOST_CHECK(true    == yPtr.unique());
+    BOOST_CHECK(1       == yPtr.use_count());
+    BOOST_CHECK(NULL    != yPtr.get());
+    BOOST_CHECK(345     == yPtr->mVal);
+    BOOST_CHECK(2       == Struct::_mNbInstances);
+
+    // Reset to NULL
+    yPtr.reset();
+
+    BOOST_CHECK(false   == yPtr.unique());
+    BOOST_CHECK(0       == yPtr.use_count());
+    BOOST_CHECK(NULL    == yPtr.get());
+    BOOST_CHECK(true    == xPtr);
+    BOOST_CHECK(true    == xPtr.unique());
+    BOOST_CHECK(1       == xPtr.use_count());
+    BOOST_CHECK(NULL    != xPtr.get());
+    BOOST_CHECK(234     == xPtr->mVal);
+    BOOST_CHECK(1       == Struct::_mNbInstances);
 
     // Reset to NULL
     xPtr.reset();

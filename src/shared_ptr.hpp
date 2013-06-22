@@ -31,22 +31,14 @@ public:
     {
     }
     /// @brief Constructor with the provided pointer to manage
-#ifdef SHARED_PTR_NEVER_THROW
-    explicit shared_ptr(T* p) : // never throws
-#else
     explicit shared_ptr(T* p) : // can throw std::bad_alloc
-#endif
         px(p),
         pn(NULL)
     {
         acquire();
     }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
-#ifdef SHARED_PTR_NEVER_THROW
-    shared_ptr(const shared_ptr& ptr) : // never throws
-#else
     shared_ptr(const shared_ptr& ptr) : // can throw std::bad_alloc
-#endif
         px(ptr.px),
         pn(ptr.pn)
     {
@@ -69,11 +61,7 @@ public:
         release();
     }
     /// @brief this reset release its ownership and re-acquire another one
-#ifdef SHARED_PTR_NEVER_THROW
-    void reset(T* p) throw() // never throws
-#else
     void reset(T* p) throw() // can throw std::bad_alloc
-#endif
     {
         release();
         px = p;
@@ -173,28 +161,22 @@ public:
 
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-#ifdef SHARED_PTR_NEVER_THROW
-    void acquire(void) throw() // never throws
-#else
     void acquire(void) // can throw std::bad_alloc
-#endif
     {
         if (NULL != px)
         {
             if (NULL == pn)
             {
-#ifdef SHARED_PTR_NEVER_THROW
                 try
-#endif
                 {
-                    pn = new long(1); // this can throw std::bad_alloc
+                    pn = new long(1); // can throw std::bad_alloc
                 }
-#ifdef SHARED_PTR_NEVER_THROW
                 catch (std::bad_alloc&)
                 {
-                    abort();
+                    delete px;
+                    px = NULL;
+                    throw; // rethrow the std::bad_alloc
                 }
-#endif
             }
             else
             {
@@ -223,3 +205,4 @@ private:
     T*      px; //!< Native pointer
     long*   pn; //!< Reference counter
 };
+

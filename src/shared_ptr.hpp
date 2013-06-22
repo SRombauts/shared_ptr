@@ -25,43 +25,55 @@ class shared_ptr
 {
 public:
     /// @brief Default constructor
-    shared_ptr(void) throw() : // nothrow
+    shared_ptr(void) throw() : // never throws
         px(NULL),
         pn(NULL)
     {
     }
     /// @brief Constructor with the provided pointer to manage
-    explicit shared_ptr(T* p) : // throw std::bad_alloc
+#ifdef SHARED_PTR_NEVER_THROW
+    explicit shared_ptr(T* p) : // never throws
+#else
+    explicit shared_ptr(T* p) : // can throw std::bad_alloc
+#endif
         px(p),
         pn(NULL)
     {
         acquire();
     }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
-    shared_ptr(const shared_ptr& ptr) : // throw std::bad_alloc
+#ifdef SHARED_PTR_NEVER_THROW
+    shared_ptr(const shared_ptr& ptr) : // never throws
+#else
+    shared_ptr(const shared_ptr& ptr) : // can throw std::bad_alloc
+#endif
         px(ptr.px),
         pn(ptr.pn)
     {
         acquire();
     }
     /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
-    shared_ptr& operator=(shared_ptr ptr) throw() // nothrow
+    shared_ptr& operator=(shared_ptr ptr) throw() // never throws
     {
         swap(ptr);
         return *this;
     }
-    /// @brief the destructor release its ownership
-    inline ~shared_ptr(void) throw() // nothrow
+    /// @brief the destructor releases its ownership
+    inline ~shared_ptr(void) throw() // never throws
     {
         release();
     }
-    /// @brief this reset release its ownership
-    inline void reset(void) throw() // nothrow
+    /// @brief this reset releases its ownership
+    inline void reset(void) throw() // never throws
     {
         release();
     }
     /// @brief this reset release its ownership and re-acquire another one
-    void reset(T* p) throw() // nothrow
+#ifdef SHARED_PTR_NEVER_THROW
+    void reset(T* p) throw() // never throws
+#else
+    void reset(T* p) throw() // can throw std::bad_alloc
+#endif
     {
         release();
         px = p;
@@ -70,22 +82,22 @@ public:
     }
 
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
-    void swap(shared_ptr& lhs) throw() // nothrow
+    void swap(shared_ptr& lhs) throw() // never throws
     {
         std::swap(px, lhs.px);
         std::swap(pn, lhs.pn);
     }
 
     // reference counter operations :
-    inline operator bool() const throw() // nothrow
+    inline operator bool() const throw() // never throws
     {
         return (0 < use_count());
     }
-    inline bool unique(void)  const throw() // nothrow
+    inline bool unique(void)  const throw() // never throws
     {
         return (1 == use_count());
     }
-    long use_count(void)  const throw() // nothrow
+    long use_count(void)  const throw() // never throws
     {
         long count = 0;
         if (NULL != pn)
@@ -96,86 +108,93 @@ public:
     }
 
     // underlying pointer operations :
-    inline T& operator*()  const throw() // nothrow
+    inline T& operator*()  const throw() // never throws
     {
         return *px;
     }
-    inline T* operator->() const throw() // nothrow
+    inline T* operator->() const throw() // never throws
     {
         return px;
     }
-    inline T* get(void)  const throw() // nothrow
+    inline T* get(void)  const throw() // never throws
     {
         return px;
     }
 
     // comparaison operators
-    inline bool operator== (const shared_ptr& ptr) const
+    inline bool operator== (const shared_ptr& ptr) const throw() // never throws
     {
         return (px == ptr.px);
     }
-    inline bool operator== (const T* p) const
+    inline bool operator== (const T* p) const throw() // never throws
     {
         return (px == p);
     }
-    inline bool operator!= (const shared_ptr& ptr) const
+    inline bool operator!= (const shared_ptr& ptr) const throw() // never throws
     {
         return (px != ptr.px);
     }
-    inline bool operator!= (const T* p) const
+    inline bool operator!= (const T* p) const throw() // never throws
     {
         return (px != p);
     }
-    inline bool operator<= (const shared_ptr& ptr) const
+    inline bool operator<= (const shared_ptr& ptr) const throw() // never throws
     {
         return (px <= ptr.px);
     }
-    inline bool operator<= (const T* p) const
+    inline bool operator<= (const T* p) const throw() // never throws
     {
         return (px <= p);
     }
-    inline bool operator< (const shared_ptr& ptr) const
+    inline bool operator< (const shared_ptr& ptr) const throw() // never throws
     {
         return (px < ptr.px);
     }
-    inline bool operator< (const T* p) const
+    inline bool operator< (const T* p) const throw() // never throws
     {
         return (px < p);
     }
-    inline bool operator>= (const shared_ptr& ptr) const
+    inline bool operator>= (const shared_ptr& ptr) const throw() // never throws
     {
         return (px >= ptr.px);
     }
-    inline bool operator>= (const T* p) const
+    inline bool operator>= (const T* p) const throw() // never throws
     {
         return (px >= p);
     }
-    inline bool operator> (const shared_ptr& ptr) const
+    inline bool operator> (const shared_ptr& ptr) const throw() // never throws
     {
         return (px > ptr.px);
     }
-    inline bool operator> (const T* p) const
+    inline bool operator> (const T* p) const throw() // never throws
     {
         return (px > p);
     }
 
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-    void acquire(void)
+#ifdef SHARED_PTR_NEVER_THROW
+    void acquire(void) throw() // never throws
+#else
+    void acquire(void) // can throw std::bad_alloc
+#endif
     {
         if (NULL != px)
         {
             if (NULL == pn)
             {
+#ifdef SHARED_PTR_NEVER_THROW
                 try
+#endif
                 {
-                    pn = new long(1);
+                    pn = new long(1); // this can throw std::bad_alloc
                 }
+#ifdef SHARED_PTR_NEVER_THROW
                 catch (std::bad_alloc&)
                 {
-                    delete px;
-                    throw;
+                    abort();
                 }
+#endif
             }
             else
             {
@@ -185,7 +204,7 @@ private:
     }
 
     /// @brief release the ownership of the px pointer, destroying the object when appropriate
-    void release(void) throw() // nothrow
+    void release(void) throw() // never throws
     {
         if (NULL != pn)
         {

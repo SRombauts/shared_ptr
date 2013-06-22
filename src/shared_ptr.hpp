@@ -9,6 +9,9 @@
  */
 #pragma once
 
+#include <cstddef>      // NULL
+#include <algorithm>    // std::swap
+
 
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.

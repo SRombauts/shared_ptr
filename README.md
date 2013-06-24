@@ -9,8 +9,8 @@ shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 s
 - to be a header only implementation
 - to keep dependencies to a minimum (STL)
 - to be portable
-- to be light and fast
-- to be monothreaded (not thread-safe)
+- to be light (minimizing code size, presently 92 bytes per template usage)
+- to be fast and monothreaded (not thread-safe)
 - to be well documented with Doxygen tags
 - to have a perfect unit test coverage
 - to use a permissive MIT license, similar to BSD or Boost, for proprietary/commercial usage

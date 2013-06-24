@@ -40,6 +40,9 @@ public:
     {
         acquire();
     }
+
+    // TODO : shared_ptr<T>(r, p) to share ownership, for static and dynamic cast
+
     /// @brief Copy constructor (used by the copy-and-swap idiom)
     shared_ptr(const shared_ptr& ptr) : // can throw std::bad_alloc
         px(ptr.px),
@@ -214,3 +217,27 @@ private:
     long*   pn; //!< Reference counter
 };
 
+
+/* TODO : need shared_ptr<T>(r, p)
+// static cast of shared_ptr
+template<class T, class U>
+shared_ptr<T> static_pointer_cast(const shared_ptr<U>& r) // never throws
+{
+    return shared_ptr<T>(r, static_cast<typename shared_ptr<T>::element_type*>(r.get()))
+}
+
+// dynamic cast of shared_ptr
+template<class T, class U>
+shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& r) // never throws
+{
+    T* p = dynamic_cast<typename shared_ptr<T>::element_type*>(r.get())
+    if (NULL != p)
+    {
+        return shared_ptr<T>(r, p);
+    }
+    else
+    {
+        return shared_ptr<T>();
+    }
+}
+*/

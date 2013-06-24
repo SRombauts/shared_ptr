@@ -12,6 +12,9 @@
 #include <cstddef>      // NULL
 #include <algorithm>    // std::swap
 
+// can be replaced by other error mecanism
+#define SHARED_ASSERT(x)    assert(x)
+
 
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
@@ -63,6 +66,7 @@ public:
     /// @brief this reset release its ownership and re-acquire another one
     void reset(T* p) throw() // can throw std::bad_alloc
     {
+        SHARED_ASSERT(p == 0 || p != px); // auto-reset not allowed
         release();
         px = p;
         pn = NULL;
@@ -72,6 +76,7 @@ public:
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
     void swap(shared_ptr& lhs) throw() // never throws
     {
+        // TODO enable ustl::swap by define
         std::swap(px, lhs.px);
         std::swap(pn, lhs.pn);
     }
@@ -98,14 +103,17 @@ public:
     // underlying pointer operations :
     inline T& operator*()  const throw() // never throws
     {
+        SHARED_ASSERT(px != 0);
         return *px;
     }
     inline T* operator->() const throw() // never throws
     {
+        SHARED_ASSERT(px != 0);
         return px;
     }
     inline T* get(void)  const throw() // never throws
     {
+        // no assert, car return NULL
         return px;
     }
 

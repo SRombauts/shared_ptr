@@ -1,0 +1,11 @@
+Simple TODO:
+* overload operators and swap as free member function
+* uSTL (http://ustl.sourceforge.net/)
+* SHARED_ASSERT() handler like in Boost
+
+More complexe feature to add?
+* np => counter -> count_base* = count_impl<X>
+** delete X != T
+** stored pointer != owned pointer
+** empty != null
+

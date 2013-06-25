@@ -17,6 +17,8 @@
 #define SHARED_ASSERT(x)    assert(x)
 
 
+class shared_ptr_count;
+
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
  *
@@ -33,13 +35,13 @@ public:
    /// @brief Default constructor
     shared_ptr(void) throw() : // never throws
         px(NULL),
-        pn(NULL)
+        pn()
     {
     }
     /// @brief Constructor with the provided pointer to manage
     explicit shared_ptr(T* p) : // may throw std::bad_alloc
       //px(p), would be unsafe as acquire() may throw, which would call release() in destructor
-        pn(NULL)
+        pn()
     {
         acquire(p);   // may throw std::bad_alloc
     }
@@ -57,7 +59,7 @@ public:
       //px(ptr.px),
         pn(ptr.pn)
     {
-        SHARED_ASSERT((NULL == ptr.px) || (NULL != ptr.pn)); // must be cohérent : no allocation allowed in this path
+        SHARED_ASSERT((NULL == ptr.px) || (0 != ptr.pn.use_count())); // must be coherent : no allocation allowed in this path
         acquire(static_cast<typename shared_ptr<T>::element_type*>(ptr.px));   // will never throw std::bad_alloc
     }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
@@ -65,7 +67,7 @@ public:
        //px(ptr.px),
         pn(ptr.pn)
     {
-        SHARED_ASSERT((NULL == ptr.px) || (NULL != ptr.pn)); // must be cohérent : no allocation allowed in this path
+        SHARED_ASSERT((NULL == ptr.px) || (0 != ptr.pn.use_count())); // must be cohérent : no allocation allowed in this path
         acquire(ptr.px);   // will never throw std::bad_alloc
     }
     /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
@@ -97,26 +99,21 @@ public:
     {
         // Would be nice to enable use of ustl::swap by define
         std::swap(px, lhs.px);
-        std::swap(pn, lhs.pn);
+        pn.swap(lhs.pn);
     }
 
     // reference counter operations :
     inline operator bool() const throw() // never throws
     {
-        return (0 < use_count());
+        return (0 < pn.use_count());
     }
     inline bool unique(void)  const throw() // never throws
     {
-        return (1 == use_count());
+        return (1 == pn.use_count());
     }
     long use_count(void)  const throw() // never throws
     {
-        long count = 0;
-        if (NULL != pn)
-        {
-            count = *pn;
-        }
-        return count;
+        return pn.use_count();
     }
 
     // underlying pointer operations :
@@ -138,7 +135,66 @@ public:
 
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-    void acquire(T* p) // may throw std::bad_alloc
+    inline void acquire(T* p) // may throw std::bad_alloc
+    {
+        pn.acquire(p); // may throw std::bad_alloc
+        px = p; // here it is safe to acquire the ownership of the provided raw pointer, where exception cannot be thrown any more
+    }
+
+    /// @brief release the ownership of the px pointer, destroying the object when appropriate
+    inline void release(void) throw() // never throws
+    {
+        pn.release(px);
+        px = NULL;
+    }
+
+private:
+    // This allow pointer_cast functions to share the reference counter between different shared_ptr types
+    template<class U>
+    friend class shared_ptr;
+
+private:
+    T*                  px; //!< Native pointer
+    shared_ptr_count    pn; //!< Reference counter
+};
+
+
+// TODO doc
+class shared_ptr_count
+{
+public:
+    shared_ptr_count() :
+        pn(NULL)
+    {
+    }
+    shared_ptr_count(const shared_ptr_count& count) :
+        pn(count.pn)
+    {
+    }
+    /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
+    void swap(shared_ptr_count& lhs) throw() // never throws
+    {
+        // Would be nice to enable use of ustl::swap by define
+        std::swap(pn, lhs.pn);
+    }
+    /* TODO : test
+    inline operator long() const throw() // never throws
+    {
+        return use_count();
+    }
+    */
+    long use_count(void) const throw() // never throws
+    {
+        long count = 0;
+        if (NULL != pn)
+        {
+            count = *pn;
+        }
+        return count;
+    }
+    /// @brief acquire/share the ownership of the pointer, initializing the reference counter
+    template<class U>
+    void acquire(U* p) // may throw std::bad_alloc
     {
         if (NULL != p)
         {
@@ -159,33 +215,24 @@ private:
                 ++(*pn);
             }
         }
-        // here it is safe to acquire the ownership of the provided raw pointer, where exception cannot be thrown any more
-        px = p;
     }
-
     /// @brief release the ownership of the px pointer, destroying the object when appropriate
-    void release(void) throw() // never throws
+    template<class U>
+    void release(U* p) throw() // never throws
     {
         if (NULL != pn)
         {
             --(*pn);
             if (0 == *pn)
             {
-                delete px;
+                delete p;
                 delete pn;
             }
-            px = NULL;
             pn = NULL;
         }
     }
 
-private:
-    // This allow pointer_cast functions to share the reference counter between different shared_ptr types
-    template<class U>
-    friend class shared_ptr;
-
-private:
-    T*      px; //!< Native pointer
+public:
     long*   pn; //!< Reference counter
 };
 

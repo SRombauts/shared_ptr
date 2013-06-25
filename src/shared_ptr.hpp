@@ -12,7 +12,8 @@
 #include <cstddef>      // NULL
 #include <algorithm>    // std::swap
 
-// can be replaced by other error mecanism
+// can be replaced by other error mechanism
+#include <cassert>
 #define SHARED_ASSERT(x)    assert(x)
 
 
@@ -27,7 +28,9 @@ template<class T>
 class shared_ptr
 {
 public:
-    /// @brief Default constructor
+   typedef T element_type;
+
+   /// @brief Default constructor
     shared_ptr(void) throw() : // never throws
         px(NULL),
         pn(NULL)
@@ -40,9 +43,14 @@ public:
     {
         acquire();
     }
-
-    // TODO : shared_ptr<T>(r, p) to share ownership, for static and dynamic cast
-
+    /// @brief Constructor to share ownership. Warning : to be used for pointer_cast only ! (does not manage two separate <T> and <U> pointers)
+    template <class U>
+    shared_ptr(const shared_ptr<U>& ptr, T* p) :
+       px(p),
+       pn(ptr.pn)
+    {
+       acquire();
+    }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
     shared_ptr(const shared_ptr& ptr) : // can throw std::bad_alloc
         px(ptr.px),
@@ -213,31 +221,34 @@ private:
     }
 
 private:
+    // This allow pointer_cast functions to share the reference counter between different shared_ptr types
+    template<class U>
+    friend class shared_ptr;
+
+private:
     T*      px; //!< Native pointer
     long*   pn; //!< Reference counter
 };
 
 
-/* TODO : need shared_ptr<T>(r, p)
 // static cast of shared_ptr
 template<class T, class U>
-shared_ptr<T> static_pointer_cast(const shared_ptr<U>& r) // never throws
+shared_ptr<T> static_pointer_cast(const shared_ptr<U>& ptr) // never throws
 {
-    return shared_ptr<T>(r, static_cast<typename shared_ptr<T>::element_type*>(r.get()))
+    return shared_ptr<T>(ptr, static_cast<typename shared_ptr<T>::element_type*>(ptr.get()));
 }
 
 // dynamic cast of shared_ptr
 template<class T, class U>
-shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& r) // never throws
+shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& ptr) // never throws
 {
-    T* p = dynamic_cast<typename shared_ptr<T>::element_type*>(r.get())
+    T* p = dynamic_cast<typename shared_ptr<T>::element_type*>(ptr.get());
     if (NULL != p)
     {
-        return shared_ptr<T>(r, p);
+        return shared_ptr<T>(ptr, p);
     }
     else
     {
         return shared_ptr<T>();
     }
 }
-*/

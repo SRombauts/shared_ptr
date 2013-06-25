@@ -37,26 +37,36 @@ public:
     {
     }
     /// @brief Constructor with the provided pointer to manage
-    explicit shared_ptr(T* p) : // can throw std::bad_alloc
-      //px(p), would be unsafe as acquire() can throw, which would call release() in destructor
+    explicit shared_ptr(T* p) : // may throw std::bad_alloc
+      //px(p), would be unsafe as acquire() may throw, which would call release() in destructor
         pn(NULL)
     {
-        acquire(p);   // can throw std::bad_alloc
+        acquire(p);   // may throw std::bad_alloc
     }
     /// @brief Constructor to share ownership. Warning : to be used for pointer_cast only ! (does not manage two separate <T> and <U> pointers)
     template <class U>
     shared_ptr(const shared_ptr<U>& ptr, T* p) :
-     //px(p), would be unsafe as acquire() can throw, which would call release() in destructor
+     //px(p), would be unsafe as acquire() may throw, which would call release() in destructor
        pn(ptr.pn)
     {
-       acquire(p);   // can throw std::bad_alloc
+       acquire(p);   // may throw std::bad_alloc
     }
-    /// @brief Copy constructor (used by the copy-and-swap idiom)
-    shared_ptr(const shared_ptr& ptr) : // can throw std::bad_alloc
-      //px(ptr.px), would be unsafe as acquire() can throw, which would call release() in destructor
+    /// @brief Copy constructor to convert from another pointer type
+    template <class U>
+    shared_ptr(const shared_ptr<U>& ptr) throw() : // never throws (see comment below)
+      //px(ptr.px),
         pn(ptr.pn)
     {
-        acquire(ptr.px);   // can throw std::bad_alloc
+        SHARED_ASSERT((NULL == ptr.px) || (NULL != ptr.pn)); // must be cohérent : no allocation allowed in this path
+        acquire(static_cast<typename shared_ptr<T>::element_type*>(ptr.px));   // will never throw std::bad_alloc
+    }
+    /// @brief Copy constructor (used by the copy-and-swap idiom)
+    shared_ptr(const shared_ptr& ptr) throw() : // never throws (see comment below)
+       //px(ptr.px),
+        pn(ptr.pn)
+    {
+        SHARED_ASSERT((NULL == ptr.px) || (NULL != ptr.pn)); // must be cohérent : no allocation allowed in this path
+        acquire(ptr.px);   // will never throw std::bad_alloc
     }
     /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
     shared_ptr& operator=(shared_ptr ptr) throw() // never throws
@@ -75,13 +85,13 @@ public:
         release();
     }
     /// @brief this reset release its ownership and re-acquire another one
-    void reset(T* p) throw() // can throw std::bad_alloc
+    void reset(T* p) throw() // may throw std::bad_alloc
     {
-        SHARED_ASSERT(p == 0 || p != px); // auto-reset not allowed
+        SHARED_ASSERT((NULL == p) || (px != p)); // auto-reset not allowed
         release();
-        px = NULL; // px = p would be unsafe as acquire() can throw, which would call release() in destructor
+        px = NULL; // px = p would be unsafe as acquire() may throw, which would call release() in destructor
         pn = NULL;
-        acquire(p); // can throw std::bad_alloc
+        acquire(p); // may throw std::bad_alloc
     }
 
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
@@ -114,12 +124,12 @@ public:
     // underlying pointer operations :
     inline T& operator*()  const throw() // never throws
     {
-        SHARED_ASSERT(px != 0);
+        SHARED_ASSERT(NULL != px);
         return *px;
     }
     inline T* operator->() const throw() // never throws
     {
-        SHARED_ASSERT(px != 0);
+        SHARED_ASSERT(NULL != px);
         return px;
     }
     inline T* get(void)  const throw() // never throws
@@ -180,7 +190,7 @@ public:
 
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-    void acquire(T* p) // can throw std::bad_alloc
+    void acquire(T* p) // may throw std::bad_alloc
     {
         if (NULL != p)
         {
@@ -188,7 +198,7 @@ private:
             {
                 try
                 {
-                    pn = new long(1); // can throw std::bad_alloc
+                    pn = new long(1); // may throw std::bad_alloc
                 }
                 catch (std::bad_alloc&)
                 {

@@ -1,4 +1,5 @@
 Test case:
+* test the templated copy-constructor doing static_cast from <U> to <T>
 * test bad_alloc exception!
 
 Simple TODO:

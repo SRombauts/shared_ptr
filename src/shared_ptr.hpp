@@ -138,32 +138,6 @@ public:
         return px;
     }
 
-    // comparaison operators
-    inline bool operator== (const shared_ptr& ptr) const throw() // never throws
-    {
-        return (px == ptr.px);
-    }
-    inline bool operator!= (const shared_ptr& ptr) const throw() // never throws
-    {
-        return (px != ptr.px);
-    }
-    inline bool operator<= (const shared_ptr& ptr) const throw() // never throws
-    {
-        return (px <= ptr.px);
-    }
-    inline bool operator< (const shared_ptr& ptr) const throw() // never throws
-    {
-        return (px < ptr.px);
-    }
-    inline bool operator>= (const shared_ptr& ptr) const throw() // never throws
-    {
-        return (px >= ptr.px);
-    }
-    inline bool operator> (const shared_ptr& ptr) const throw() // never throws
-    {
-        return (px > ptr.px);
-    }
-
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
     void acquire(T* p) // may throw std::bad_alloc
@@ -216,6 +190,34 @@ private:
     T*      px; //!< Native pointer
     long*   pn; //!< Reference counter
 };
+
+
+// comparaison operators
+template<class T, class U> inline bool operator==(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+{
+    return (l.get() == r.get());
+}
+template<class T, class U> inline bool operator!=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+{
+    return (l.get() != r.get());
+}
+template<class T, class U> inline bool operator<=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+{
+    return (l.get() <= r.get());
+}
+template<class T, class U> inline bool operator<(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+{
+    return (l.get() < r.get());
+}
+template<class T, class U> inline bool operator>=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+{
+    return (l.get() >= r.get());
+}
+template<class T, class U> inline bool operator>(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+{
+    return (l.get() > r.get());
+}
+
 
 
 // static cast of shared_ptr

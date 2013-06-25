@@ -38,25 +38,25 @@ public:
     }
     /// @brief Constructor with the provided pointer to manage
     explicit shared_ptr(T* p) : // can throw std::bad_alloc
-        px(p),
+      //px(p), would be unsafe as acquire() can throw, which would call release() in destructor
         pn(NULL)
     {
-        acquire();
+        acquire(p);   // can throw std::bad_alloc
     }
     /// @brief Constructor to share ownership. Warning : to be used for pointer_cast only ! (does not manage two separate <T> and <U> pointers)
     template <class U>
     shared_ptr(const shared_ptr<U>& ptr, T* p) :
-       px(p),
+     //px(p), would be unsafe as acquire() can throw, which would call release() in destructor
        pn(ptr.pn)
     {
-       acquire();
+       acquire(p);   // can throw std::bad_alloc
     }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
     shared_ptr(const shared_ptr& ptr) : // can throw std::bad_alloc
-        px(ptr.px),
+      //px(ptr.px), would be unsafe as acquire() can throw, which would call release() in destructor
         pn(ptr.pn)
     {
-        acquire();
+        acquire(ptr.px);   // can throw std::bad_alloc
     }
     /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
     shared_ptr& operator=(shared_ptr ptr) throw() // never throws
@@ -79,15 +79,15 @@ public:
     {
         SHARED_ASSERT(p == 0 || p != px); // auto-reset not allowed
         release();
-        px = p;
+        px = NULL; // px = p would be unsafe as acquire() can throw, which would call release() in destructor
         pn = NULL;
-        acquire();
+        acquire(p); // can throw std::bad_alloc
     }
 
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
     void swap(shared_ptr& lhs) throw() // never throws
     {
-        // TODO enable ustl::swap by define
+        // Would be nice to enable use of ustl::swap by define
         std::swap(px, lhs.px);
         std::swap(pn, lhs.pn);
     }
@@ -180,9 +180,9 @@ public:
 
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-    void acquire(void) // can throw std::bad_alloc
+    void acquire(T* p) // can throw std::bad_alloc
     {
-        if (NULL != px)
+        if (NULL != p)
         {
             if (NULL == pn)
             {
@@ -192,8 +192,7 @@ private:
                 }
                 catch (std::bad_alloc&)
                 {
-                    delete px;
-                    px = NULL;
+                    delete p;
                     throw; // rethrow the std::bad_alloc
                 }
             }
@@ -202,6 +201,8 @@ private:
                 ++(*pn);
             }
         }
+        // here it is safe to acquire the ownership of the provided raw pointer, where exception cannot be thrown any more
+        px = p;
     }
 
     /// @brief release the ownership of the px pointer, destroying the object when appropriate

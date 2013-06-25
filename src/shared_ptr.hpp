@@ -143,49 +143,25 @@ public:
     {
         return (px == ptr.px);
     }
-    inline bool operator== (const T* p) const throw() // never throws
-    {
-        return (px == p);
-    }
     inline bool operator!= (const shared_ptr& ptr) const throw() // never throws
     {
         return (px != ptr.px);
-    }
-    inline bool operator!= (const T* p) const throw() // never throws
-    {
-        return (px != p);
     }
     inline bool operator<= (const shared_ptr& ptr) const throw() // never throws
     {
         return (px <= ptr.px);
     }
-    inline bool operator<= (const T* p) const throw() // never throws
-    {
-        return (px <= p);
-    }
     inline bool operator< (const shared_ptr& ptr) const throw() // never throws
     {
         return (px < ptr.px);
-    }
-    inline bool operator< (const T* p) const throw() // never throws
-    {
-        return (px < p);
     }
     inline bool operator>= (const shared_ptr& ptr) const throw() // never throws
     {
         return (px >= ptr.px);
     }
-    inline bool operator>= (const T* p) const throw() // never throws
-    {
-        return (px >= p);
-    }
     inline bool operator> (const shared_ptr& ptr) const throw() // never throws
     {
         return (px > ptr.px);
-    }
-    inline bool operator> (const T* p) const throw() // never throws
-    {
-        return (px > p);
     }
 
 private:

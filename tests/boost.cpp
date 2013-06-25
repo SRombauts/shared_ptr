@@ -329,28 +329,19 @@ BOOST_AUTO_TEST_CASE (compare_ptr)
     BOOST_CHECK(234     == yPtr->mVal);
     Struct* pY = yPtr.get();
 
-    BOOST_CHECK(xPtr    != pY);
     BOOST_CHECK(xPtr    != yPtr);
     if (pX < pY)
     {
-        BOOST_CHECK(xPtr    < pY);
-        BOOST_CHECK(xPtr    < yPtr);
-        BOOST_CHECK(xPtr    <= pY);
+        BOOST_CHECK(xPtr    <  yPtr);
         BOOST_CHECK(xPtr    <= yPtr);
-        BOOST_CHECK(yPtr    > pX);
-        BOOST_CHECK(yPtr    > xPtr);
-        BOOST_CHECK(yPtr    >= pX);
+        BOOST_CHECK(yPtr    >  xPtr);
         BOOST_CHECK(yPtr    >= xPtr);
     }
     else // (pX > pY)
     {
-        BOOST_CHECK(xPtr    > pY);
-        BOOST_CHECK(xPtr    > yPtr);
-        BOOST_CHECK(xPtr    >= pY);
+        BOOST_CHECK(xPtr    >  yPtr);
         BOOST_CHECK(xPtr    >= yPtr);
-        BOOST_CHECK(yPtr    < pX);
-        BOOST_CHECK(yPtr    < xPtr);
-        BOOST_CHECK(yPtr    <= pX);
+        BOOST_CHECK(yPtr    <  xPtr);
         BOOST_CHECK(yPtr    <= xPtr);
     }
 
@@ -359,13 +350,9 @@ BOOST_AUTO_TEST_CASE (compare_ptr)
     Struct* pZ = zPtr.get();
 
     BOOST_CHECK(pX      == pZ);
-    BOOST_CHECK(xPtr    == pZ);
     BOOST_CHECK(xPtr    == zPtr);
-    BOOST_CHECK(zPtr    == pX);
     BOOST_CHECK(zPtr    == xPtr);
-    BOOST_CHECK(xPtr    >= pZ);
     BOOST_CHECK(xPtr    >= zPtr);
-    BOOST_CHECK(xPtr    <= pZ);
     BOOST_CHECK(xPtr    <= zPtr);
 }
 

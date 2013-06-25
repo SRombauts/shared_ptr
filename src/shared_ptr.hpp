@@ -224,10 +224,10 @@ private:
             if (0 == *pn)
             {
                 delete px;
-                px = NULL;
                 delete pn;
-                pn = NULL;
             }
+            px = NULL;
+            pn = NULL;
         }
     }
 

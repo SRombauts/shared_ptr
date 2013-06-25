@@ -89,8 +89,6 @@ public:
     {
         SHARED_ASSERT((NULL == p) || (px != p)); // auto-reset not allowed
         release();
-        px = NULL; // px = p would be unsafe as acquire() may throw, which would call release() in destructor
-        pn = NULL;
         acquire(p); // may throw std::bad_alloc
     }
 

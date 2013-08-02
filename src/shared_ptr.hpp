@@ -17,7 +17,86 @@
 #define SHARED_ASSERT(x)    assert(x)
 
 
-class shared_ptr_count;
+/**
+ * @brief implementation of reference counter for the following minimal smart pointer.
+ *
+ * shared_ptr_count is a container for the allocated pn reference counter.
+ */
+class shared_ptr_count
+{
+public:
+    shared_ptr_count() :
+        pn(NULL)
+    {
+    }
+    shared_ptr_count(const shared_ptr_count& count) :
+        pn(count.pn)
+    {
+    }
+    /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
+    void swap(shared_ptr_count& lhs) throw() // never throws
+    {
+        std::swap(pn, lhs.pn);
+    }
+    /* TODO : test
+    inline operator long() const throw() // never throws
+    {
+        return use_count();
+    }
+    */
+    long use_count(void) const throw() // never throws
+    {
+        long count = 0;
+        if (NULL != pn)
+        {
+            count = *pn;
+        }
+        return count;
+    }
+    /// @brief acquire/share the ownership of the pointer, initializing the reference counter
+    template<class U>
+    void acquire(U* p) // may throw std::bad_alloc
+    {
+        if (NULL != p)
+        {
+            if (NULL == pn)
+            {
+                try
+                {
+                    pn = new long(1); // may throw std::bad_alloc
+                }
+                catch (std::bad_alloc&)
+                {
+                    delete p;
+                    throw; // rethrow the std::bad_alloc
+                }
+            }
+            else
+            {
+                ++(*pn);
+            }
+        }
+    }
+    /// @brief release the ownership of the px pointer, destroying the object when appropriate
+    template<class U>
+    void release(U* p) throw() // never throws
+    {
+        if (NULL != pn)
+        {
+            --(*pn);
+            if (0 == *pn)
+            {
+                delete p;
+                delete pn;
+            }
+            pn = NULL;
+        }
+    }
+
+public:
+    long*   pn; //!< Reference counter
+};
+
 
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
@@ -156,84 +235,6 @@ private:
 private:
     T*                  px; //!< Native pointer
     shared_ptr_count    pn; //!< Reference counter
-};
-
-
-// TODO doc
-class shared_ptr_count
-{
-public:
-    shared_ptr_count() :
-        pn(NULL)
-    {
-    }
-    shared_ptr_count(const shared_ptr_count& count) :
-        pn(count.pn)
-    {
-    }
-    /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
-    void swap(shared_ptr_count& lhs) throw() // never throws
-    {
-        // Would be nice to enable use of ustl::swap by define
-        std::swap(pn, lhs.pn);
-    }
-    /* TODO : test
-    inline operator long() const throw() // never throws
-    {
-        return use_count();
-    }
-    */
-    long use_count(void) const throw() // never throws
-    {
-        long count = 0;
-        if (NULL != pn)
-        {
-            count = *pn;
-        }
-        return count;
-    }
-    /// @brief acquire/share the ownership of the pointer, initializing the reference counter
-    template<class U>
-    void acquire(U* p) // may throw std::bad_alloc
-    {
-        if (NULL != p)
-        {
-            if (NULL == pn)
-            {
-                try
-                {
-                    pn = new long(1); // may throw std::bad_alloc
-                }
-                catch (std::bad_alloc&)
-                {
-                    delete p;
-                    throw; // rethrow the std::bad_alloc
-                }
-            }
-            else
-            {
-                ++(*pn);
-            }
-        }
-    }
-    /// @brief release the ownership of the px pointer, destroying the object when appropriate
-    template<class U>
-    void release(U* p) throw() // never throws
-    {
-        if (NULL != pn)
-        {
-            --(*pn);
-            if (0 == *pn)
-            {
-                delete p;
-                delete pn;
-            }
-            pn = NULL;
-        }
-    }
-
-public:
-    long*   pn; //!< Reference counter
 };
 
 

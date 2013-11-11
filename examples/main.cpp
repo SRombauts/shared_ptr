@@ -13,6 +13,7 @@
 
 #include "../src/shared_ptr.hpp"
 
+#ifdef TEST_SHARED
 
 class Xxx
 {
@@ -98,3 +99,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
+
+#endif // #ifdef TEST_SHARED
+

@@ -109,9 +109,10 @@ template<class T>
 class shared_ptr
 {
 public:
-   typedef T element_type;
+    /// The type of the managed object, aliased as member type
+    typedef T element_type;
 
-   /// @brief Default constructor
+    /// @brief Default constructor
     shared_ptr(void) throw() : // never throws
         px(NULL),
         pn()

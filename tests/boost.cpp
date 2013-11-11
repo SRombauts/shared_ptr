@@ -87,6 +87,7 @@ BOOST_AUTO_TEST_CASE (empty_ptr)
         BOOST_CHECK(NULL    == xPtr.get());
         BOOST_CHECK(false   == zPtr.unique());
         BOOST_CHECK(0       == zPtr.use_count());
+        std::cout << "zPtr.get()=" << zPtr.get() << std::endl;
         BOOST_CHECK(NULL    == zPtr.get());
     }
     // end of scope

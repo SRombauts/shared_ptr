@@ -59,10 +59,6 @@ source_group(doc FILES ${SHARED_PTR_DOC})
 # All includes are relative to the "include" directory 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-# add sources of the wrapper as a "shared_ptr" static library
-add_library(shared_ptr ${SHARED_PTR_INC} ${SHARED_PTR_DOC})
-
-
 
 # Optional additional targets:
 

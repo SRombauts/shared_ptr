@@ -11,9 +11,7 @@
 #include <cstring>   // memset
 #include <cstdlib>   // abort
 
-#include "../src/shared_ptr.hpp"
-
-#ifdef TEST_SHARED
+#include "shared_ptr.hpp"
 
 class Xxx
 {
@@ -51,12 +49,12 @@ private:
     char*   buffer;
 };
 
-void func(void)
+void shared_ptr_test(void)
 {
     // Create an empty (ie. NULL) shared_ptr
     shared_ptr<Xxx> xPtr;
 
-    std::cout << "func: in\n";
+    std::cout << "shared_ptr_test: in\n";
 
     if (xPtr) // empty pointer
     {
@@ -85,7 +83,7 @@ void func(void)
 
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
-    std::cout << "func: out\n";
+    std::cout << "shared_ptr_test: out\n";
 
     // Same as :
     //xPtr.reset();
@@ -95,10 +93,7 @@ int main(void)
 {
     std::cout << "main\n";
 
-    func ();
+    shared_ptr_test ();
 
     return EXIT_SUCCESS;
 }
-
-#endif // #ifdef TEST_SHARED
-

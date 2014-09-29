@@ -209,7 +209,7 @@ public:
     }
     inline T* get(void)  const throw() // never throws
     {
-        // no assert, car return NULL
+        // no assert, can return NULL
         return px;
     }
 

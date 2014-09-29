@@ -1,6 +1,8 @@
 shared_ptr
 ----------
 
+![shared_ptr build status](https://api.travis-ci.org/SRombauts/shared_ptr.png "shared_ptr build status")
+
 shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
 
 ### The goals of this minimal shared_ptr are:
@@ -40,6 +42,13 @@ And following IDEs/Compilers
 
 To use this shared_ptr implementation, you only need to include the shared_ptr.hpp file
 from the source code of your projects.
+
+### Continuous Integration
+
+This project is continuously tested under Ubuntu Linux with the gcc and clang compilers
+using the Travis CI community service with the above CMake building and testing procedure.
+
+Detailed results can be seen online: https://travis-ci.org/SRombauts/shared_ptr
 
 ### License
 

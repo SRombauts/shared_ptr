@@ -68,6 +68,7 @@ void shared_ptr_test(void)
         //shared_ptr<Xxx> yPtr;
         //yPtr.reset(new Xxx(1024));
 
+        std::cout << "yPtr=" << yPtr.get() << std::endl;
         if (yPtr) // valid pointer
         {
             // Access members functions/variables like with a raw pointer
@@ -80,20 +81,70 @@ void shared_ptr_test(void)
 
         // Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)
         xPtr = yPtr;
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
+        std::cout << "yPtr=" << yPtr.get() << std::endl;
 
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
+    std::cout << "xPtr=" << xPtr.get() << std::endl;
     std::cout << "shared_ptr_test: out\n";
 
     // Same as :
     //xPtr.reset();
 } // xPtr is destroyed, the reference counter drops to 0 thus the object is destroyed and the memory freed
 
+// TODO
+#include <memory>
+
+void unique_ptr_test(void)
+{
+    // Create an empty (ie. NULL) unique_ptr
+    std::unique_ptr<Xxx> xPtr;
+
+    std::cout << "unique_ptr_test: in\n";
+
+    if (xPtr) // empty pointer
+    {
+        abort(); // impossible
+    }
+    else
+    {
+        // Create a new Xxx object, and give its ownership to the yPtr unique_ptr
+        std::unique_ptr<Xxx> yPtr(new Xxx(1024));
+        // Same as :
+        //unique_ptr<Xxx> yPtr;
+        //yPtr.reset(new Xxx(1024));
+
+        std::cout << "yPtr=" << yPtr.get() << std::endl;
+        if (yPtr) // valid pointer
+        {
+            // Access members functions/variables like with a raw pointer
+            yPtr->doSomething();
+        }
+        else
+        {
+            abort(); // impossible
+        }
+
+        // Transfert ownership by making a copy of the unique_ptr
+        xPtr = std::move(yPtr);
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
+        std::cout << "yPtr=" << yPtr.get() << std::endl;
+
+    } // yPtr is destroyed, but xPtr retains the ownership of the object
+
+    std::cout << "xPtr=" << xPtr.get() << std::endl;
+    std::cout << "unique_ptr_test: out\n";
+
+    // Same as :
+    //xPtr.reset();
+} // xPtr is destroyed, thus the object is destroyed and the memory freed
+
 int main(void)
 {
-    std::cout << "main\n";
-
-    shared_ptr_test ();
+    shared_ptr_test();
+    std::cout << std::endl;
+    unique_ptr_test();
 
     return EXIT_SUCCESS;
 }

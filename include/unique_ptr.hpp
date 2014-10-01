@@ -51,26 +51,23 @@ public:
     {
     }
     /// @brief Constructor with the provided pointer to manage
-    explicit unique_ptr(T* p) // may throw std::bad_alloc
-      //px(p), would be unsafe as acquire() may throw, which would call release() in destructor
+	explicit unique_ptr(T* p) throw() : // never throws
+		px(p)
     {
-        acquire(p);   // may throw std::bad_alloc
     }
     /// @brief Copy constructor to convert from another pointer type
     template <class U>
-    unique_ptr(unique_ptr<U>& ptr) throw() // never throws (see comment below)
-      //px(ptr.px)
+    unique_ptr(const unique_ptr<U>& ptr) throw() : // never throws
+		px(static_cast<typename unique_ptr<T>::element_type*>(ptr.px))
     {
-        acquire(static_cast<typename unique_ptr<T>::element_type*>(ptr.px));   // will never throw std::bad_alloc
-        ptr.px = NULL; // ownership transfered
+		const_cast<unique_ptr<U>&>(ptr).px = NULL; // const-cast to force ownership transfer!
     }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
-    unique_ptr(unique_ptr& ptr) throw() // never throws (see comment below)
-      //px(ptr.px)
+    unique_ptr(const unique_ptr& ptr) throw() : // never throws
+        px(ptr.px)
     {
-        acquire(ptr.px);   // will never throw std::bad_alloc
-        ptr.px = NULL; // ownership transfered
-    }
+		const_cast<unique_ptr&>(ptr).px = NULL; // const-cast to force ownership transfer!
+	}
     /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
     unique_ptr& operator=(unique_ptr ptr) throw() // never throws
     {
@@ -88,17 +85,16 @@ public:
         release();
     }
     /// @brief this reset release its ownership and re-acquire another one
-    void reset(T* p) throw() // may throw std::bad_alloc
+	void reset(T* p) throw() // never throws
     {
         SHARED_ASSERT((NULL == p) || (px != p)); // auto-reset not allowed
         release();
-        acquire(p); // may throw std::bad_alloc
+		px = p;
     }
 
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
     void swap(unique_ptr& lhs) throw() // never throws
     {
-        // Would be nice to enable use of ustl::swap by define
         std::swap(px, lhs.px);
     }
 
@@ -126,13 +122,7 @@ public:
     }
 
 private:
-    /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-    inline void acquire(T* p) // may throw std::bad_alloc
-    {
-        px = p; // here it is safe to acquire the ownership of the provided raw pointer, where exception cannot be thrown any more
-    }
-
-    /// @brief release the ownership of the px pointer, destroying the object when appropriate
+    /// @brief release the ownership of the px pointer/destroy the object
     inline void release(void) throw() // never throws
     {
         delete px;

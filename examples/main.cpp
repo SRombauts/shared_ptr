@@ -11,6 +11,8 @@
 #include <cstring>   // memset
 #include <cstdlib>   // abort
 
+#include <vector>
+
 #include "shared_ptr.hpp"
 #include "unique_ptr.hpp"
 
@@ -44,6 +46,10 @@ public:
             std::cout << "doSomething buffer(" << size << ")\n";
         }
     };
+private:
+	// non-copyable
+	Xxx(Xxx&);
+	Xxx& operator=(Xxx&);
 
 private:
     size_t  size;
@@ -87,7 +93,18 @@ void shared_ptr_test(void)
 
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
-    std::cout << "xPtr=" << xPtr.get() << std::endl;
+	std::cout << "xPtr=" << xPtr.get() << std::endl;
+
+	{
+		std::vector<shared_ptr<Xxx> > PtrList;
+		PtrList.push_back(xPtr);
+
+		std::cout << "PtrList.back=" << PtrList.back().get() << std::endl;
+		std::cout << "xPtr=" << xPtr.get() << std::endl;
+	}
+
+	std::cout << "xPtr=" << xPtr.get() << std::endl;
+
     std::cout << "shared_ptr_test: out\n";
 
     // Same as :
@@ -124,15 +141,30 @@ void unique_ptr_test(void)
             abort(); // impossible
         }
 
-        // Transfert ownership by making a copy of the unique_ptr
+        // Transfer ownership by making a copy of the unique_ptr
         xPtr = move(yPtr);
         std::cout << "xPtr=" << xPtr.get() << std::endl;
         std::cout << "yPtr=" << yPtr.get() << std::endl;
 
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
-    std::cout << "xPtr=" << xPtr.get() << std::endl;
-    std::cout << "unique_ptr_test: out\n";
+	std::cout << "xPtr=" << xPtr.get() << std::endl;
+
+	{
+		std::vector<unique_ptr<Xxx> > PtrList;
+		PtrList.push_back(move(xPtr)); // Transfer ownership to the vector
+
+		std::cout << "PtrList.back=" << PtrList.back().get() << std::endl;
+		std::cout << "xPtr=" << xPtr.get() << std::endl;
+
+		xPtr = PtrList.back(); // Get back ownership from the vector
+
+		std::cout << "xPtr=" << xPtr.get() << std::endl;
+	}
+
+	std::cout << "xPtr=" << xPtr.get() << std::endl;
+
+	std::cout << "unique_ptr_test: out\n";
 
     // Same as :
     //xPtr.reset();

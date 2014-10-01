@@ -41,6 +41,7 @@ source_group(inc FILES ${SHARED_PTR_INC})
 # list of test files
 set(SHARED_PTR_TESTS
  tests/shared_ptr_test.cpp
+ tests/unique_ptr_test.cpp
 )
 source_group(tests FILES ${SHARED_PTR_TESTS})
 

@@ -1,8 +1,8 @@
 /**
- * @file  boost.hpp
- * @brief Complete Boost Unit Test of this shared_ptr minimal implementation.
+ * @file  shared_ptr_test.hpp
+ * @brief Complete Unit Test of this shared_ptr minimal implementation using Google Test library.
  *
- * Copyright (c) 2013 Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ * Copyright (c) 2013-2014 Sebastien Rombauts (sebastien.rombauts@gmail.com)
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -41,7 +41,7 @@ int Struct::_mNbInstances = 0;
 
 
 
-TEST(share_ptr, empty_ptr)
+TEST(shared_ptr, empty_ptr)
 {
     // Create an empty (ie. NULL) shared_ptr
     shared_ptr<Struct> xPtr;
@@ -98,7 +98,7 @@ TEST(share_ptr, empty_ptr)
     EXPECT_EQ((void*)NULL,  xPtr.get());
 }
 
-TEST(share_ptr, basic_ptr)
+TEST(shared_ptr, basic_ptr)
 {
     {
         // Create a shared_ptr
@@ -190,7 +190,7 @@ TEST(share_ptr, basic_ptr)
     EXPECT_EQ(0,     Struct::_mNbInstances);
 }
 
-TEST(share_ptr, reset_ptr)
+TEST(shared_ptr, reset_ptr)
 {
     // Create an empty (ie. NULL) shared_ptr
     shared_ptr<Struct> xPtr;
@@ -300,7 +300,7 @@ TEST(share_ptr, reset_ptr)
     EXPECT_EQ(0,     Struct::_mNbInstances);
 }
 
-TEST(share_ptr, compare_ptr)
+TEST(shared_ptr, compare_ptr)
 {
     // Create a shared_ptr
     shared_ptr<Struct> xPtr(new Struct(123));
@@ -357,7 +357,7 @@ TEST(share_ptr, compare_ptr)
     EXPECT_LE(xPtr, zPtr);
 }
 
-TEST(share_ptr, swap_ptr)
+TEST(shared_ptr, swap_ptr)
 {
     // Create a shared_ptr
     shared_ptr<Struct> xPtr(new Struct(123));
@@ -420,7 +420,7 @@ int B::_mNbInstances = 0;
 
 
 
-TEST(share_ptr, pointer_conv)
+TEST(shared_ptr, pointer_conv)
 {
    shared_ptr<A> a0Ptr;
    EXPECT_EQ(false, a0Ptr);
@@ -465,7 +465,7 @@ TEST(share_ptr, pointer_conv)
    EXPECT_EQ(0,     B::_mNbInstances);
 }
 
-TEST(share_ptr, stat_pointer_cast)
+TEST(shared_ptr, stat_pointer_cast)
 {
    shared_ptr<A> a0Ptr;
    EXPECT_EQ(false, a0Ptr);
@@ -494,7 +494,7 @@ TEST(share_ptr, stat_pointer_cast)
       EXPECT_EQ(3, A::_mNbInstances);
       EXPECT_EQ(2, B::_mNbInstances);
 
-      // dynamic cast
+      // static cast
       shared_ptr<A> a2Ptr = static_pointer_cast<A>(bPtr);
       EXPECT_EQ(true, a2Ptr);
       EXPECT_EQ(false, a2Ptr.unique());
@@ -525,7 +525,7 @@ TEST(share_ptr, stat_pointer_cast)
    EXPECT_EQ(0,     B::_mNbInstances);
 }
 
-TEST(share_ptr, dyn_pointer_cast)
+TEST(shared_ptr, dyn_pointer_cast)
 {
    shared_ptr<A> a0Ptr;
    EXPECT_EQ(false, a0Ptr);

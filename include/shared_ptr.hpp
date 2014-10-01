@@ -162,7 +162,7 @@ public:
         release();
     }
     /// @brief this reset release its ownership and re-acquire another one
-    void reset(T* p) throw() // may throw std::bad_alloc
+    void reset(T* p) // may throw std::bad_alloc
     {
         SHARED_ASSERT((NULL == p) || (px != p)); // auto-reset not allowed
         release();
@@ -172,7 +172,6 @@ public:
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
     void swap(shared_ptr& lhs) throw() // never throws
     {
-        // Would be nice to enable use of ustl::swap by define
         std::swap(px, lhs.px);
         pn.swap(lhs.pn);
     }

@@ -12,6 +12,7 @@
 #include <cstdlib>   // abort
 
 #include "shared_ptr.hpp"
+#include "unique_ptr.hpp"
 
 class Xxx
 {
@@ -93,13 +94,10 @@ void shared_ptr_test(void)
     //xPtr.reset();
 } // xPtr is destroyed, the reference counter drops to 0 thus the object is destroyed and the memory freed
 
-// TODO
-#include <memory>
-
 void unique_ptr_test(void)
 {
     // Create an empty (ie. NULL) unique_ptr
-    std::unique_ptr<Xxx> xPtr;
+    unique_ptr<Xxx> xPtr;
 
     std::cout << "unique_ptr_test: in\n";
 
@@ -110,7 +108,7 @@ void unique_ptr_test(void)
     else
     {
         // Create a new Xxx object, and give its ownership to the yPtr unique_ptr
-        std::unique_ptr<Xxx> yPtr(new Xxx(1024));
+        unique_ptr<Xxx> yPtr(new Xxx(1024));
         // Same as :
         //unique_ptr<Xxx> yPtr;
         //yPtr.reset(new Xxx(1024));
@@ -127,7 +125,7 @@ void unique_ptr_test(void)
         }
 
         // Transfert ownership by making a copy of the unique_ptr
-        xPtr = std::move(yPtr);
+        xPtr = move(yPtr);
         std::cout << "xPtr=" << xPtr.get() << std::endl;
         std::cout << "yPtr=" << yPtr.get() << std::endl;
 

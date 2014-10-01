@@ -34,6 +34,7 @@ endif (MSVC)
 # list of header files
 set(SHARED_PTR_INC
  ${PROJECT_SOURCE_DIR}/include/shared_ptr.hpp
+ ${PROJECT_SOURCE_DIR}/include/unique_ptr.hpp
 )
 source_group(inc FILES ${SHARED_PTR_INC})
 

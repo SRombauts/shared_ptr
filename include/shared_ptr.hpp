@@ -2,7 +2,7 @@
  * @file  shared_ptr.hpp
  * @brief shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
  *
- * Copyright (c) 2013 Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ * Copyright (c) 2013-2014 Sebastien Rombauts (sebastien.rombauts@gmail.com)
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -38,12 +38,7 @@ public:
     {
         std::swap(pn, lhs.pn);
     }
-    /* TODO : test
-    inline operator long() const throw() // never throws
-    {
-        return use_count();
-    }
-    */
+    /// @brief getter of the underlying reference counter
     long use_count(void) const throw() // never throws
     {
         long count = 0;

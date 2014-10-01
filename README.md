@@ -17,11 +17,16 @@ shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 s
 - to have a perfect unit test coverage
 - to use a permissive MIT license, similar to BSD or Boost, for proprietary/commercial usage
 
+- to also provide a fake unique_ptr to be used with older compiler
+
 ### Limitations
+- does not come with a 
 - does not manage array type (does not call delete[] for array allocated with new[])
 - does not manage the underlying raw pointer type separately from the template shared_ptr type : does not call delete on the right type, thus needing virtual destructor (as with raw pointer)
 - does not distinguish between the stored pointer and the owned pointer : cannot store a pointer to objet member while managing a pointer to the object itself
 - not thread-safe
+
+- the fake unique_ptr does not at all conform to the standard, and so is only a placeholder for use with older compilers
 
 ### Suported platforms:
 
@@ -43,7 +48,7 @@ And following IDEs/Compilers
 To use this shared_ptr implementation, you only need to include the shared_ptr.hpp file
 from the source code of your projects.
 
-###�Continuous Integration
+### Continuous Integration
 
 This project is continuously tested under Ubuntu Linux with the gcc and clang compilers
 using the Travis CI community service with the above CMake building and testing procedure.
@@ -59,11 +64,14 @@ or copy at http://opensource.org/licenses/MIT)
 
 ## Getting started
 ### About std::shared_ptr:
-- http://en.cppreference.com/w/cpp/memory/shared_ptr
 - http://www.cplusplus.com/reference/memory/shared_ptr/
+- http://en.cppreference.com/w/cpp/memory/shared_ptr
 
 ### About boost::shared_ptr:
 - http://www.boost.org/libs/smart_ptr/shared_ptr.htm
+
+### About std::unique_ptr:
+- http://www.cplusplus.com/reference/memory/unique_ptr/
 
 ### First sample demonstrates how to create a shared_ptr to a class Xxx:
 

@@ -47,9 +47,9 @@ public:
         }
     };
 private:
-	// non-copyable
-	Xxx(Xxx&);
-	Xxx& operator=(Xxx&);
+    // non-copyable
+    Xxx(Xxx&);
+    Xxx& operator=(Xxx&);
 
 private:
     size_t  size;
@@ -86,24 +86,28 @@ void shared_ptr_test(void)
             abort(); // impossible
         }
 
-        // Share ownership by making a copy of the shared_ptr (the reference counter reachs 2)
+        // Share ownership by making a copy of the shared_ptr (the reference counter reaches 2)
         xPtr = yPtr;
         std::cout << "xPtr=" << xPtr.get() << std::endl;
         std::cout << "yPtr=" << yPtr.get() << std::endl;
 
+        std::vector<shared_ptr<Xxx> > PtrVec;
+        PtrVec.push_back(xPtr);
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
+
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
-	std::cout << "xPtr=" << xPtr.get() << std::endl;
+    std::cout << "xPtr=" << xPtr.get() << std::endl;
 
-	{
-		std::vector<shared_ptr<Xxx> > PtrList;
-		PtrList.push_back(xPtr);
+    {
+        std::vector<shared_ptr<Xxx> > PtrList;
+        PtrList.push_back(xPtr);
 
-		std::cout << "PtrList.back=" << PtrList.back().get() << std::endl;
-		std::cout << "xPtr=" << xPtr.get() << std::endl;
-	}
+        std::cout << "PtrList.back=" << PtrList.back().get() << std::endl;
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
+    }
 
-	std::cout << "xPtr=" << xPtr.get() << std::endl;
+    std::cout << "xPtr=" << xPtr.get() << std::endl;
 
     std::cout << "shared_ptr_test: out\n";
 
@@ -146,25 +150,29 @@ void unique_ptr_test(void)
         std::cout << "xPtr=" << xPtr.get() << std::endl;
         std::cout << "yPtr=" << yPtr.get() << std::endl;
 
+        std::vector<unique_ptr<Xxx> > PtrVec;
+        PtrVec.push_back(xPtr);
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
+
     } // yPtr is destroyed, but xPtr retains the ownership of the object
 
-	std::cout << "xPtr=" << xPtr.get() << std::endl;
+    std::cout << "xPtr=" << xPtr.get() << std::endl;
 
-	{
-		std::vector<unique_ptr<Xxx> > PtrList;
-		PtrList.push_back(move(xPtr)); // Transfer ownership to the vector
+    {
+        std::vector<unique_ptr<Xxx> > PtrList;
+        PtrList.push_back(move(xPtr)); // Transfer ownership to the vector
 
-		std::cout << "PtrList.back=" << PtrList.back().get() << std::endl;
-		std::cout << "xPtr=" << xPtr.get() << std::endl;
+        std::cout << "PtrList.back=" << PtrList.back().get() << std::endl;
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
 
-		xPtr = PtrList.back(); // Get back ownership from the vector
+        xPtr = PtrList.back(); // Get back ownership from the vector
 
-		std::cout << "xPtr=" << xPtr.get() << std::endl;
-	}
+        std::cout << "xPtr=" << xPtr.get() << std::endl;
+    }
 
-	std::cout << "xPtr=" << xPtr.get() << std::endl;
+    std::cout << "xPtr=" << xPtr.get() << std::endl;
 
-	std::cout << "unique_ptr_test: out\n";
+    std::cout << "unique_ptr_test: out\n";
 
     // Same as :
     //xPtr.reset();

@@ -51,25 +51,25 @@ public:
     {
     }
     /// @brief Constructor with the provided pointer to manage
-	explicit unique_ptr(T* p) throw() : // never throws
-		px(p)
+    explicit unique_ptr(T* p) throw() : // never throws
+        px(p)
     {
     }
     /// @brief Copy constructor to convert from another pointer type
-	/* TODO MSVC error C2248: 'unique_ptr<B>::px' : unique_ptr<A> cannot access private member declared in class 'unique_ptr<B>'
+    /* TODO MSVC error C2248: 'unique_ptr<B>::px' : unique_ptr<A> cannot access private member declared in class 'unique_ptr<B>'
     template <class U>
     unique_ptr(const unique_ptr<U>& ptr) throw() : // never throws
-		px(static_cast<typename unique_ptr<T>::element_type*>(ptr.px))
+        px(static_cast<typename unique_ptr<T>::element_type*>(ptr.px))
     {
-		const_cast<unique_ptr<U>&>(ptr).px = NULL; // const-cast to force ownership transfer!
+        const_cast<unique_ptr<U>&>(ptr).px = NULL; // const-cast to force ownership transfer!
     }
-	*/
+    */
     /// @brief Copy constructor (used by the copy-and-swap idiom)
     unique_ptr(const unique_ptr& ptr) throw() : // never throws
         px(ptr.px)
     {
-		const_cast<unique_ptr&>(ptr).px = NULL; // const-cast to force ownership transfer!
-	}
+        const_cast<unique_ptr&>(ptr).px = NULL; // const-cast to force ownership transfer!
+    }
     /// @brief Assignment operator using the copy-and-swap idiom (copy constructor and swap method)
     unique_ptr& operator=(unique_ptr ptr) throw() // never throws
     {
@@ -84,14 +84,14 @@ public:
     /// @brief this reset releases its ownership and destroy the object
     inline void reset(void) throw() // never throws
     {
-		destroy();
+        destroy();
     }
     /// @brief this reset release its ownership and re-acquire another one
-	void reset(T* p) throw() // never throws
+    void reset(T* p) throw() // never throws
     {
         SHARED_ASSERT((NULL == p) || (px != p)); // auto-reset not allowed
-		destroy();
-		px = p;
+        destroy();
+        px = p;
     }
 
     /// @brief Swap method for the copy-and-swap idiom (copy constructor and swap method)
@@ -100,13 +100,13 @@ public:
         std::swap(px, lhs.px);
     }
 
-	/// @brief release the ownership of the px pointer without destroying the object!
-	inline void release(void) throw() // never throws
-	{
-		px = NULL;
-	}
+    /// @brief release the ownership of the px pointer without destroying the object!
+    inline void release(void) throw() // never throws
+    {
+        px = NULL;
+    }
 
-	// reference counter operations :
+    // reference counter operations :
     inline operator bool() const throw() // never throws
     {
         return (NULL != px); // TODO nullptr
@@ -130,18 +130,18 @@ public:
     }
 
 private:
-	/// @brief release the ownership of the px pointer and destroy the object
-	inline void destroy(void) throw() // never throws
-	{
-		delete px;
-		px = NULL;
-	}
+    /// @brief release the ownership of the px pointer and destroy the object
+    inline void destroy(void) throw() // never throws
+    {
+        delete px;
+        px = NULL;
+    }
 
-	/// @brief hack: const-cast release the ownership of the px pointer without destroying the object!
-	inline void release(void) const throw() // never throws
-	{
-		px = NULL;
-	}
+    /// @brief hack: const-cast release the ownership of the px pointer without destroying the object!
+    inline void release(void) const throw() // never throws
+    {
+        px = NULL;
+    }
 
 private:
     T* px; //!< Native pointer

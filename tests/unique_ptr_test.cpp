@@ -122,32 +122,32 @@ TEST(unique_ptr, basic_ptr)
             {
                 // Assign the unique_ptr, transfering ownership
                 unique_ptr<Struct2> zPtr;
-				zPtr = yPtr;
+                zPtr = yPtr;
 
                 EXPECT_NE(yPtr,  zPtr);
-				EXPECT_EQ(false, yPtr);
-				EXPECT_EQ((void*)NULL, yPtr.get());
+                EXPECT_EQ(false, yPtr);
+                EXPECT_EQ((void*)NULL, yPtr.get());
                 EXPECT_EQ(true,  zPtr);
                 EXPECT_NE((void*)NULL,  zPtr.get());
                 EXPECT_EQ(123,   zPtr->mVal);
                 EXPECT_EQ(1,     Struct2::_mNbInstances);
             }
 
-			EXPECT_EQ(false, xPtr);
-			EXPECT_EQ((void*)NULL, xPtr.get());
-			EXPECT_EQ(false, yPtr);
-			EXPECT_EQ((void*)NULL, yPtr.get());
-			EXPECT_EQ(0, Struct2::_mNbInstances);
-		}
+            EXPECT_EQ(false, xPtr);
+            EXPECT_EQ((void*)NULL, xPtr.get());
+            EXPECT_EQ(false, yPtr);
+            EXPECT_EQ((void*)NULL, yPtr.get());
+            EXPECT_EQ(0, Struct2::_mNbInstances);
+        }
         else
         {
             GTEST_FATAL_FAILURE_("bool cast operator error");
         }
 
-		EXPECT_EQ(false, xPtr);
-		EXPECT_EQ((void*)NULL, xPtr.get());
-		EXPECT_EQ(0, Struct2::_mNbInstances);
-	}
+        EXPECT_EQ(false, xPtr);
+        EXPECT_EQ((void*)NULL, xPtr.get());
+        EXPECT_EQ(0, Struct2::_mNbInstances);
+    }
 
     EXPECT_EQ(0,     Struct2::_mNbInstances);
 }

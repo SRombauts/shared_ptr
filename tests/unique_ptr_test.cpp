@@ -10,8 +10,9 @@
 
 #include "unique_ptr.hpp"
 
-#include <gtest/gtest.h>
+#include <vector>
 
+#include <gtest/gtest.h>
 
 struct Struct2
 {
@@ -75,7 +76,6 @@ TEST(unique_ptr, empty_ptr)
 
         EXPECT_EQ(false, xPtr);
         EXPECT_EQ((void*)NULL,  xPtr.get());
-        std::cout << "zPtr.get()=" << zPtr.get() << std::endl;
         EXPECT_EQ((void*)NULL,  zPtr.get());
     }
     // end of scope
@@ -274,4 +274,30 @@ TEST(unique_ptr, swap_ptr)
     }
 }
 
+TEST(unique_ptr, std_container)
+{
+    // Create a shared_ptr
+    unique_ptr<Struct2> xPtr(new Struct2(123));
+
+    EXPECT_EQ(true, xPtr);
+    EXPECT_NE((void*)NULL, xPtr.get());
+    EXPECT_EQ(123, xPtr->mVal);
+    EXPECT_EQ(1, Struct2::_mNbInstances);
+    Struct2* pX = xPtr.get();
+
+    {
+        std::vector<unique_ptr<Struct2> > PtrList;
+
+        // Move-it inside a container, transfering ownership
+        PtrList.push_back(xPtr);
+
+        EXPECT_EQ(false, xPtr);
+        EXPECT_EQ(true,  PtrList.back());
+        EXPECT_EQ(pX,    PtrList.back().get());
+        EXPECT_EQ(1, Struct2::_mNbInstances);
+
+    } // Destructor of the vector releases the last pointer thus destroying the object
+
+    EXPECT_EQ(0, Struct2::_mNbInstances);
+}
 

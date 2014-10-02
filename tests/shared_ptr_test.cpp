@@ -10,8 +10,9 @@
 
 #include "shared_ptr.hpp"
 
-#include <gtest/gtest.h>
+#include <vector>
 
+#include <gtest/gtest.h>
 
 struct Struct
 {
@@ -87,7 +88,6 @@ TEST(shared_ptr, empty_ptr)
         EXPECT_EQ((void*)NULL,  xPtr.get());
         EXPECT_EQ(false, zPtr.unique());
         EXPECT_EQ(0,     zPtr.use_count());
-        std::cout << "zPtr.get()=" << zPtr.get() << std::endl;
         EXPECT_EQ((void*)NULL,  zPtr.get());
     }
     // end of scope
@@ -355,6 +355,68 @@ TEST(shared_ptr, compare_ptr)
     EXPECT_EQ(zPtr, xPtr);
     EXPECT_GE(xPtr, zPtr);
     EXPECT_LE(xPtr, zPtr);
+}
+
+TEST(shared_ptr, std_container)
+{
+    // Create a shared_ptr
+    shared_ptr<Struct> xPtr(new Struct(123));
+
+    EXPECT_EQ(true, xPtr);
+    EXPECT_EQ(true, xPtr.unique());
+    EXPECT_EQ(1,    xPtr.use_count());
+    EXPECT_NE((void*)NULL, xPtr.get());
+    EXPECT_EQ(123,  xPtr->mVal);
+    EXPECT_EQ(1, Struct::_mNbInstances);
+    Struct* pX = xPtr.get();
+
+    {
+        std::vector<shared_ptr<Struct> > PtrList;
+
+        // Copy-it inside a container
+        PtrList.push_back(xPtr);
+
+        EXPECT_EQ(true,  xPtr);
+        EXPECT_EQ(false, xPtr.unique());
+        EXPECT_EQ(2,     xPtr.use_count());
+        EXPECT_EQ(2,     PtrList.back().use_count());
+        EXPECT_EQ(xPtr,  PtrList.back());
+        EXPECT_EQ(pX,    PtrList.back().get());
+        EXPECT_EQ(1, Struct::_mNbInstances);
+
+        // And copy-it again
+        PtrList.push_back(xPtr);
+
+        EXPECT_EQ(true,  xPtr);
+        EXPECT_EQ(false, xPtr.unique());
+        EXPECT_EQ(3,     xPtr.use_count());
+        EXPECT_EQ(3,     PtrList.back().use_count());
+        EXPECT_EQ(xPtr,  PtrList.back());
+        EXPECT_EQ(pX,    PtrList.back().get());
+        EXPECT_EQ(1, Struct::_mNbInstances);
+
+        // Remove the second pointer from the vector
+        PtrList.pop_back();
+
+        EXPECT_EQ(true,  xPtr);
+        EXPECT_EQ(false, xPtr.unique());
+        EXPECT_EQ(2,     xPtr.use_count());
+        EXPECT_EQ(2,     PtrList.back().use_count());
+        EXPECT_EQ(xPtr,  PtrList.back());
+        EXPECT_EQ(pX,    PtrList.back().get());
+        EXPECT_EQ(1, Struct::_mNbInstances);
+
+        // Reset the original pointer, leaving 1 last pointer in the vector
+        xPtr.reset();
+
+        EXPECT_EQ(false, xPtr);
+        EXPECT_EQ(1,     PtrList.back().use_count());
+        EXPECT_EQ(pX,    PtrList.back().get());
+        EXPECT_EQ(1, Struct::_mNbInstances);
+
+    } // Destructor of the vector releases the last pointer thus destroying the object
+
+    EXPECT_EQ(0, Struct::_mNbInstances);
 }
 
 TEST(shared_ptr, swap_ptr)

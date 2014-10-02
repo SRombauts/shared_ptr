@@ -9,6 +9,6 @@ cd build
 cmake ..
 cmake --build .
 
-@REM prepare and launch tests
+@REM launch tests
 ctest --output-on-failure
 cd ..

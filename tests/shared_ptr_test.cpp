@@ -16,7 +16,7 @@
 
 struct Struct
 {
-    Struct(int aVal) :
+    explicit Struct(int aVal) :
         mVal(aVal)
     {
         ++_mNbInstances;

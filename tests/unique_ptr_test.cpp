@@ -16,7 +16,7 @@
 
 struct Struct2
 {
-    Struct2(int aVal) :
+    explicit Struct2(int aVal) :
         mVal(aVal)
     {
         ++_mNbInstances;
@@ -107,7 +107,7 @@ TEST(unique_ptr, basic_ptr)
             xPtr->decr();
             xPtr->decr();
 
-            // Copy construct the unique_ptr, transfering ownership
+            // Copy construct the unique_ptr, transferring ownership
             unique_ptr<Struct2> yPtr(xPtr);
 
             EXPECT_NE(xPtr,  yPtr);
@@ -120,8 +120,8 @@ TEST(unique_ptr, basic_ptr)
 
             if (yPtr)
             {
-                // Assign the unique_ptr, transfering ownership
                 unique_ptr<Struct2> zPtr;
+                // Assign the unique_ptr, transferring ownership
                 zPtr = yPtr;
 
                 EXPECT_NE(yPtr,  zPtr);
@@ -175,7 +175,7 @@ TEST(unique_ptr, reset_ptr)
     EXPECT_EQ(1,    Struct2::_mNbInstances);
     EXPECT_NE(pX,   xPtr.get());
 
-    // Copy-construct a new unique_ptr to the same object
+    // Copy-construct a new unique_ptr to the same object, transferring ownership
     unique_ptr<Struct2> yPtr(xPtr);
 
     EXPECT_NE(xPtr,  yPtr);
@@ -288,8 +288,8 @@ TEST(unique_ptr, std_container)
     {
         std::vector<unique_ptr<Struct2> > PtrList;
 
-        // Move-it inside a container, transfering ownership
-        PtrList.push_back(xPtr);
+        // Move-it inside a container, transferring ownership
+        PtrList.push_back(move(xPtr));
 
         EXPECT_EQ(false, xPtr);
         EXPECT_EQ(true,  PtrList.back());

@@ -20,7 +20,7 @@ shared_ptr is a minimal implementation of smart pointer, a subset of the C++11 s
 - to also provide a fake unique_ptr to be used with older compiler
 
 ### Limitations
-- does not come with a 
+- does not come with a weak_ptr implementation
 - does not manage array type (does not call delete[] for array allocated with new[])
 - does not manage the underlying raw pointer type separately from the template shared_ptr type : does not call delete on the right type, thus needing virtual destructor (as with raw pointer)
 - does not distinguish between the stored pointer and the owned pointer : cannot store a pointer to objet member while managing a pointer to the object itself

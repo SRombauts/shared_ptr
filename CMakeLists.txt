@@ -80,7 +80,7 @@ if (SHARED_PTR_BUILD_TESTS)
     endif (NOT MSVC)
 
     add_subdirectory(googletest) 
-    include_directories("${PROJECT_SOURCE_DIR}/googletest/include")
+    include_directories("${PROJECT_SOURCE_DIR}/googletest/googletest/include")
 
     # add the unit test executable
     add_executable(shared_ptr_tests ${SHARED_PTR_TESTS} ${SHARED_PTR_INC})

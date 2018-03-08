@@ -32,11 +32,17 @@ inline T& move(T& v)
 
 
 /**
- * @brief minimal implementation of smart pointer, a subset of the C++11 std::unique_ptr or boost::unique_ptr.
+ * @brief minimal implementation of unique pointer, a subset of the C++11 std::unique_ptr or boost::unique_ptr.
  *
  * unique_ptr is a smart pointer retaining ownership of an object through a provided pointer,
- * and sharing this ownership with a reference counter.
- * It destroys the object when the last shared pointer pointing to it is destroyed or reset.
+ * without the overhead of the shared_ptr reference counter.
+ * It does not allow sharing this ownership (but moving it is possible)
+ * and destroys the object when the pointer is destroyed or reset.
+ *
+ * This implementation is a fake one, to use when compiling on an older compiler that does not have the move semantic.
+ * As such, it cannot offer any guaranty that the pointer is not copied!
+ * It is still usable in production on such a compiler if you also compile
+ * your program on a recent compiler to verify that it does not violate this guaranty.
  */
 template<class T>
 class unique_ptr

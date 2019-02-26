@@ -152,12 +152,12 @@ public:
         return *this;
     }
     /// @brief the destructor releases its ownership
-    inline ~shared_ptr(void) throw() // never throws
+    ~shared_ptr(void) throw() // never throws
     {
         release();
     }
     /// @brief this reset releases its ownership
-    inline void reset(void) throw() // never throws
+    void reset(void) throw() // never throws
     {
         release();
     }
@@ -177,11 +177,11 @@ public:
     }
 
     // reference counter operations :
-    inline operator bool() const throw() // never throws
+    operator bool() const throw() // never throws
     {
         return (0 < pn.use_count());
     }
-    inline bool unique(void)  const throw() // never throws
+    bool unique(void)  const throw() // never throws
     {
         return (1 == pn.use_count());
     }
@@ -191,17 +191,17 @@ public:
     }
 
     // underlying pointer operations :
-    inline T& operator*()  const throw() // never throws
+    T& operator*()  const throw() // never throws
     {
         SHARED_ASSERT(NULL != px);
         return *px;
     }
-    inline T* operator->() const throw() // never throws
+    T* operator->() const throw() // never throws
     {
         SHARED_ASSERT(NULL != px);
         return px;
     }
-    inline T* get(void)  const throw() // never throws
+    T* get(void)  const throw() // never throws
     {
         // no assert, can return NULL
         return px;
@@ -209,14 +209,14 @@ public:
 
 private:
     /// @brief acquire/share the ownership of the px pointer, initializing the reference counter
-    inline void acquire(T* p) // may throw std::bad_alloc
+    void acquire(T* p) // may throw std::bad_alloc
     {
         pn.acquire(p); // may throw std::bad_alloc
         px = p; // here it is safe to acquire the ownership of the provided raw pointer, where exception cannot be thrown any more
     }
 
     /// @brief release the ownership of the px pointer, destroying the object when appropriate
-    inline void release(void) throw() // never throws
+    void release(void) throw() // never throws
     {
         pn.release(px);
         px = NULL;
@@ -234,27 +234,27 @@ private:
 
 
 // comparaison operators
-template<class T, class U> inline bool operator==(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+template<class T, class U> bool operator==(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
 {
     return (l.get() == r.get());
 }
-template<class T, class U> inline bool operator!=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+template<class T, class U> bool operator!=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
 {
     return (l.get() != r.get());
 }
-template<class T, class U> inline bool operator<=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+template<class T, class U> bool operator<=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
 {
     return (l.get() <= r.get());
 }
-template<class T, class U> inline bool operator<(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+template<class T, class U> bool operator<(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
 {
     return (l.get() < r.get());
 }
-template<class T, class U> inline bool operator>=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+template<class T, class U> bool operator>=(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
 {
     return (l.get() >= r.get());
 }
-template<class T, class U> inline bool operator>(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
+template<class T, class U> bool operator>(const shared_ptr<T>& l, const shared_ptr<U>& r) throw() // never throws
 {
     return (l.get() > r.get());
 }

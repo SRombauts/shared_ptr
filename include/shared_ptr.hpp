@@ -92,6 +92,22 @@ public:
     long*   pn; //!< Reference counter
 };
 
+class shared_ptr_base
+{
+protected:
+    shared_ptr_base(void) :
+        pn()
+    {
+    }
+
+    shared_ptr_base(const shared_ptr_base& other) :
+        pn(other.pn)
+    {
+    }
+
+    shared_ptr_count    pn; //!< Reference counter
+};
+
 
 /**
  * @brief minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
@@ -101,7 +117,7 @@ public:
  * It destroys the object when the last shared pointer pointing to it is destroyed or reset.
  */
 template<class T>
-class shared_ptr
+class shared_ptr: public shared_ptr_base
 {
 public:
     /// The type of the managed object, aliased as member type
@@ -109,14 +125,14 @@ public:
 
     /// @brief Default constructor
     shared_ptr(void) throw() : // never throws
-        px(NULL),
-        pn()
+        shared_ptr_base(),
+        px(NULL)
     {
     }
     /// @brief Constructor with the provided pointer to manage
     explicit shared_ptr(T* p) : // may throw std::bad_alloc
       //px(p), would be unsafe as acquire() may throw, which would call release() in destructor
-        pn()
+        shared_ptr_base()
     {
         acquire(p);   // may throw std::bad_alloc
     }
@@ -124,7 +140,7 @@ public:
     template <class U>
     shared_ptr(const shared_ptr<U>& ptr, T* p) :
      //px(p), would be unsafe as acquire() may throw, which would call release() in destructor
-       pn(ptr.pn)
+       shared_ptr_base(ptr)
     {
        acquire(p);   // may throw std::bad_alloc
     }
@@ -132,7 +148,7 @@ public:
     template <class U>
     shared_ptr(const shared_ptr<U>& ptr) throw() : // never throws (see comment below)
       //px(ptr.px),
-        pn(ptr.pn)
+        shared_ptr_base(ptr)
     {
         SHARED_ASSERT((NULL == ptr.px) || (0 != ptr.pn.use_count())); // must be coherent : no allocation allowed in this path
         acquire(static_cast<typename shared_ptr<T>::element_type*>(ptr.px));   // will never throw std::bad_alloc
@@ -140,7 +156,7 @@ public:
     /// @brief Copy constructor (used by the copy-and-swap idiom)
     shared_ptr(const shared_ptr& ptr) throw() : // never throws (see comment below)
        //px(ptr.px),
-        pn(ptr.pn)
+         shared_ptr_base(ptr)
     {
         SHARED_ASSERT((NULL == ptr.px) || (0 != ptr.pn.use_count())); // must be cohérent : no allocation allowed in this path
         acquire(ptr.px);   // will never throw std::bad_alloc
@@ -223,13 +239,7 @@ private:
     }
 
 private:
-    // This allow pointer_cast functions to share the reference counter between different shared_ptr types
-    template<class U>
-    friend class shared_ptr;
-
-private:
     T*                  px; //!< Native pointer
-    shared_ptr_count    pn; //!< Reference counter
 };
 
 

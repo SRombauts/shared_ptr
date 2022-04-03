@@ -150,8 +150,8 @@ public:
       //px(ptr.px),
         shared_ptr_base(ptr)
     {
-        SHARED_ASSERT((NULL == ptr.px) || (0 != ptr.pn.use_count())); // must be coherent : no allocation allowed in this path
-        acquire(static_cast<typename shared_ptr<T>::element_type*>(ptr.px));   // will never throw std::bad_alloc
+        SHARED_ASSERT((NULL == ptr.get()) || (0 != ptr.use_count())); // must be coherent : no allocation allowed in this path
+        acquire(static_cast<typename shared_ptr<T>::element_type*>(ptr.get()));   // will never throw std::bad_alloc
     }
     /// @brief Copy constructor (used by the copy-and-swap idiom)
     shared_ptr(const shared_ptr& ptr) throw() : // never throws (see comment below)

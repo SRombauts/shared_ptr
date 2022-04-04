@@ -1,0 +1,48 @@
+name: Auto Test
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+# test gcc, clang, msvc and mingw
+
+jobs:
+  ubuntu_gcc_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - run: 'CC=gcc CXX=g++ bash build.sh'
+  ubuntu_clang_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - run: 'CC=clang CXX=clang++ bash build.sh'
+  macos_clang_test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - run: 'CC=clang CXX=clang++ bash build.sh'
+  vs2022_test:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - run: '.\build.bat'
+  mingw_test:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - run: cmake . -B build -G "MinGW Makefiles"
+      - run: cmake --build build
+      - run: 'cd build && ctest --output-on-failure'

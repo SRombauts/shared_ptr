@@ -5,6 +5,8 @@ shared_ptr
 
 [shared_ptr](include/shared_ptr.hpp) is a minimal implementation of smart pointer, a subset of the C++11 std::shared_ptr or boost::shared_ptr.
 
+![Shared Pointer UML](http://zhaoyan.website/xinzhi/cpp/html/pics/shared.png)
+
 It comes with a fake implementation of a [unique_ptr](include/unique_ptr.hpp) for C++98.
 
 ### The goals of this minimal shared_ptr are:

@@ -8,6 +8,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(shared_ptr)
 
+option(SHARED_PTR_USE_STACK_PROTECTOR "Use -fstack-protector-all" ON)
+
 # Define useful variables to handle Compiler/IDE differences:
 if (MSVC)
     # Flags for linking with multithread static C++ runtime
@@ -16,9 +18,13 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 else (MSVC)
+    set(SHARED_PTR_COMMON_CFLAGS -Wall -Wextra -pedantic -Wformat-security -Winit-self -Wswitch-enum -Wfloat-equal -Wshadow -Wcast-qual -Wconversion -Winline)
+    if (SHARED_PTR_USE_STACK_PROTECTOR)
+        set(SHARED_PTR_COMMON_CFLAGS -fstack-protector-all ${SHARED_PTR_COMMON_CFLAGS})
+    endif ()
     if (CMAKE_COMPILER_IS_GNUCXX)
         # GCC flags
-        set(SHARED_PTR_GCC_CFLAGS -fstack-protector-all -Wall -Wextra -pedantic -Wformat-security -Winit-self -Wswitch-enum -Wfloat-equal -Wshadow -Wcast-qual -Wconversion -Wlogical-op -Winline)
+        set(SHARED_PTR_GCC_CFLAGS -Wlogical-op ${SHARED_PTR_COMMON_CFLAGS})
         if (MINGW)
             add_definitions(-Wl,--export-all-symbols ${SHARED_PTR_GCC_CFLAGS})
             link_libraries(-lssp)
@@ -27,7 +33,7 @@ else (MSVC)
         endif (MINGW)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         # Clang flags
-        add_definitions(-fstack-protector-all -Wall -Wextra -pedantic -Wformat-security -Winit-self -Wswitch-enum -Wfloat-equal -Wshadow -Wcast-qual -Wconversion -Winline)
+        add_definitions(${SHARED_PTR_COMMON_CFLAGS})
     endif (CMAKE_COMPILER_IS_GNUCXX)
 endif (MSVC)
 
